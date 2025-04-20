@@ -1,1 +1,24 @@
-﻿<h1>Category List</h1>
+﻿@model IEnumerable<Category>
+<h1>Category List</h1>
+<table class="table table-bordered table-striped">
+	<thead>
+		<tr>
+			<th>
+				Category Name
+			</th>
+			<th>
+				Display Order
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach(var c in Model.OrderBy(c => c.DisplayOrder))
+		{
+			<tr>
+				<td>@c.Name</td>
+				<td>@c.DisplayOrder</td>
+			</tr>
+			
+		}
+	</tbody>
+</table>
