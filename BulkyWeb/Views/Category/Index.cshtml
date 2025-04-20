@@ -23,6 +23,9 @@
 				<th>
 					Display Order
 				</th>
+				<th>
+
+				</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -31,8 +34,20 @@
 				<tr>
 					<td>@c.Name</td>
 					<td>@c.DisplayOrder</td>
+					<td>
+						<div class="w-75 btn-group" role="group" >
+							<a asp-action="Edit" asp-controller="Category"
+							   class="btn btn-primary mx-2">
+								<i class="bi bi-pencil-square"></i> Edit
+							</a>
+							<a asp-action="Delete" asp-controller="Category"
+							   class="btn btn-danger mx-2 ">
+								<i class="bi bi-trash-fill"></i> Delete
+							</a>
+						</div>
+					</td>
 				</tr>
-
+				 
 			}
 		</tbody>
 	</table>
