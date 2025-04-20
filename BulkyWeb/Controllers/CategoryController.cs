@@ -38,11 +38,12 @@ namespace BulkyWeb.Controllers
                 ModelState.AddModelError("", "The Name can't be equal to Dispaly Order");
             }
 
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                
+
                 _db.Add(category);
                 _db.SaveChanges();
+                TempData["Success"] = "Category Created Successfully";
                 return RedirectToAction(nameof(CategoryController.Index));
             }
             return View(category);
@@ -80,6 +81,8 @@ namespace BulkyWeb.Controllers
             {
                 _db.Update(category);
                 _db.SaveChanges();
+                TempData["Success"] = "Category Updated Successfully";
+
                 return RedirectToAction(nameof(CategoryController.Index));
             }
             return View(category);
@@ -112,6 +115,7 @@ namespace BulkyWeb.Controllers
             }
             _db.Categories.Remove(category);
             _db.SaveChanges();
+            TempData["Success"] = "Category Deleted Successfully";
             return RedirectToAction(nameof(CategoryController.Index));
         }
     }
