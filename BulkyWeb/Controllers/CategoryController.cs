@@ -50,14 +50,14 @@ namespace BulkyWeb.Controllers
 
 
         [HttpGet]
-        public IActionResult Edit(int? id )
+        public IActionResult Edit(int? categoryId)
         {
-            if(id is null or 0)
+            if(categoryId is null or 0)
             {
                 return NotFound();
             }
 
-            var category = _db.Categories.FirstOrDefault(c => c.Id == id);
+            var category = _db.Categories.FirstOrDefault(c => c.Id == categoryId);
             if(category is null)
             {
                 return NotFound();
