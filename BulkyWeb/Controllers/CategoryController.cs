@@ -84,5 +84,35 @@ namespace BulkyWeb.Controllers
             }
             return View(category);
         }
+
+
+        [HttpGet]
+        public IActionResult Delete(int? categoryId)
+        {
+            if (categoryId is null or 0)
+            {
+                return NotFound();
+            }
+
+            var category = _db.Categories.FirstOrDefault(c => c.Id == categoryId);
+            if (category is null)
+            {
+                return NotFound();
+            }
+            return View(category);
+        }
+
+        [HttpPost,ActionName("Delete")]
+        public IActionResult DeletePost(int? categoryId)
+        {
+            var category = _db.Categories.FirstOrDefault(c => c.Id == categoryId);
+            if (category is null)
+            {
+                return NotFound();
+            }
+            _db.Categories.Remove(category);
+            _db.SaveChanges();
+            return RedirectToAction(nameof(CategoryController.Index));
+        }
     }
 }
