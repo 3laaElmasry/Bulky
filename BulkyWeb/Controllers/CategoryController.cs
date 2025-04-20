@@ -31,10 +31,11 @@ namespace BulkyWeb.Controllers
         public IActionResult Create(Category category)
         {
            
-            if(category.Name == category.DisplayOrder.ToString())
+            if(category.Name is not null && 
+                category.Name == category.DisplayOrder.ToString())
             {
                 
-                ModelState.AddModelError("name", "The Name can't be equal to Dispaly Order");
+                ModelState.AddModelError("", "The Name can't be equal to Dispaly Order");
             }
 
             if(ModelState.IsValid)
