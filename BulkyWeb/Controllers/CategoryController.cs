@@ -78,8 +78,7 @@ namespace BulkyWeb.Controllers
 
             if (ModelState.IsValid)
             {
-
-                _db.Add(category);
+                _db.Update(category);
                 _db.SaveChanges();
                 return RedirectToAction(nameof(CategoryController.Index));
             }
