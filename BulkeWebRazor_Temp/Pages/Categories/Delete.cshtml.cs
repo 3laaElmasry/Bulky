@@ -39,6 +39,7 @@ namespace BulkeWebRazor_Temp.Pages.Categories
             }
             _db.Remove(categoryToDelete);
             _db.SaveChanges();
+            TempData["Success"] = "Category Deleted Successfully";
             return RedirectToPage("Index");
         }
     }
