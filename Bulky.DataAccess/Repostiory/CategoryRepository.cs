@@ -19,7 +19,7 @@ namespace Bulky.DataAccess.Repostiory
         public void Add(Category entity)
         {
             _db.Categories.Add(entity);
-            this.Save();
+            
         }
 
         public Category? Get(Expression<Func<Category, bool>> filter)
@@ -35,13 +35,13 @@ namespace Bulky.DataAccess.Repostiory
         public void Remove(Category entity)
         {
             _db.Remove(entity);
-            this.Save();
+            
         }
 
         public void RemoveRange(IEnumerable<Category> entities)
         {
             _db.RemoveRange(entities);
-            this.Save();
+            
         }
 
         public void Save()
@@ -52,7 +52,7 @@ namespace Bulky.DataAccess.Repostiory
         public void Upda(Category obj)
         {
             _db.Update(obj);
-            this.Save();
+            
         }
     }
 }
