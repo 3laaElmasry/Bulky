@@ -1,5 +1,7 @@
 
 using Bulky.DataAccess.Data;
+using Bulky.DataAccess.Repostiory;
+using Bulky.DataAccess.Repostiory.IRepositroy;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +15,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     (builder.Configuration.GetConnectionString("defaultConnection"));
         
 });
+
+builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
 
 var app = builder.Build();
 

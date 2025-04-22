@@ -49,7 +49,7 @@ namespace Bulky.DataAccess.Repostiory
            _db.SaveChanges();
         }
 
-        public void Upda(Category obj)
+        public void Update(Category obj)
         {
             _db.Update(obj);
             
