@@ -1,42 +1,48 @@
 ﻿@model Category
-
-<form method="post" asp-action="Delete" asp-controller="Category">
-	<input hidden value="@Model.Id" name="categoryId" />
-
-	<div class="border p-3 mt-4">
-		<div class="row pb-4">
-			<h2 class="text-primary">Delete Category</h2>
-			<hr />
-		</div>
-		
-		<div class="mb-3 row p-1">
-			<label class="p-0" asp-for="Name"></label>
-			<input asp-for="Name" disabled type="text" class="form-control" />
-			
-
-		</div>
-		<div class="mb-3 row p1">
-			<label class="p-0" asp-for="DisplayOrder"></label>
-			<input asp-for="DisplayOrder" disabled class="form-control" />
-			
-
-		</div>
-
+<div class="card shadow border-0 mt-4">
+	<div class="card-header bg-secondary bg-gradient ml-0 py-3">
 		<div class="row">
-			<div class="col-6 col-md-3">
-				<button type="submit" class="btn btn-danger form-control">Delete</button>
-
-			</div>
-
-			<div class="col-6 col-md-3">
-				<a asp-controller="Category" asp-action="Index"
-				   class="btn btn-outline-secondary border form-control">
-					Back To List
-				</a>
+			<div class="col-12 text-center">
+				<h2 class="text-white py-2">Delete Category</h2>
 			</div>
 		</div>
 	</div>
-</form>
+	<div class="card-body p-4">
+
+		<form class="row" method="post" asp-action="Delete" asp-controller="Category">
+			<input hidden value="@Model.Id" name="categoryId" />
+
+			<div class="border p-3">
+				<div class="form-floating py-2 col-12">
+					<input readonly asp-for="Name" class="form-control border-0 shadow" />
+					<label asp-for="Name" class="ms-2"></label>
+					
+				</div>
+				<div class="form-floating py-2 col-12">
+					<input readonly asp-for="DisplayOrder" class="form-control border-0 shadow" />
+					<label asp-for="DisplayOrder" class="ms-2"></label>
+					
+				</div>
+
+				<div class="row pt-2">
+					<div class="col-6 col-md-3">
+						<button type="submit" class="btn btn-danger form-control">Delete</button>
+
+					</div>
+
+					<div class="col-6 col-md-3">
+						<a asp-controller="Category" asp-action="Index"
+						   class="btn btn-outline-primary border  form-control">
+							Back To List
+						</a>
+					</div>
+				</div>
+			</div>
+		</form>
+
+
+	</div>
+</div>
 
 
 @section Scripts {
