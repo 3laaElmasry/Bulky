@@ -1,6 +1,6 @@
-﻿using Bulky.Models;
+﻿using BulkyBook.Models;
 
-namespace Bulky.DataAccess.Repostiory.IRepositroy
+namespace BulkyBook.DataAccess.Repostiory.IRepositroy
 {
     public interface ICategoryRepository : IRepository<Category>
     {

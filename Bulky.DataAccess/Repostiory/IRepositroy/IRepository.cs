@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-namespace Bulky.DataAccess.Repostiory.IRepositroy
+namespace BulkyBook.DataAccess.Repostiory.IRepositroy
 {
     public interface IRepository<T> where T : class
     {

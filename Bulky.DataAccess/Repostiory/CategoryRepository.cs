@@ -1,10 +1,10 @@
-﻿using Bulky.DataAccess.Data;
-using Bulky.DataAccess.Repostiory.IRepositroy;
-using Bulky.Models;
+﻿using BulkyBook.DataAccess.Data;
+using BulkyBook.DataAccess.Repostiory.IRepositroy;
+using BulkyBook.Models;
 using System.Linq.Expressions;
 
 
-namespace Bulky.DataAccess.Repostiory
+namespace BulkyBook.DataAccess.Repostiory
 {
     public class CategoryRepository : ICategoryRepository
     {

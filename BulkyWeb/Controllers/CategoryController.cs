@@ -1,12 +1,9 @@
-﻿
-using Bulky.DataAccess.Data;
-using Bulky.DataAccess.Repostiory;
-using Bulky.DataAccess.Repostiory.IRepositroy;
-using Bulky.Models;
+﻿using BulkyBook.DataAccess.Repostiory.IRepositroy;
+using BulkyBook.Models;
 using Microsoft.AspNetCore.Mvc;
 
 
-namespace BulkyWeb.Controllers
+namespace BulkyBookWeb.Controllers
 {
     public class CategoryController : Controller
     {

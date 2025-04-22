@@ -1,7 +1,7 @@
 
-using Bulky.DataAccess.Data;
-using Bulky.DataAccess.Repostiory;
-using Bulky.DataAccess.Repostiory.IRepositroy;
+using BulkyBook.DataAccess.Data;
+using BulkyBook.DataAccess.Repostiory;
+using BulkyBook.DataAccess.Repostiory.IRepositroy;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +12,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer
-    (builder.Configuration.GetConnectionString("defaultConnection"));
+    (builder.Configuration.GetConnectionString("defaultConnection"), sqlServerOptions => sqlServerOptions.EnableRetryOnFailure());
         
 });
 
