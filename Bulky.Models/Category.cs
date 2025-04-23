@@ -16,5 +16,6 @@ namespace BulkyBook.Models
             ErrorMessage = "The Display Order should be 1-100")]
         [Display(Name = "Display Order")]
         public int DisplayOrder { get; set; }
+        public List<Product>? Products { get; set; }
     }
 }
