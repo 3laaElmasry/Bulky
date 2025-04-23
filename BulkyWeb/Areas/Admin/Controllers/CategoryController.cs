@@ -18,7 +18,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            List<Category> categoriesList = _unitOfWork.Category.GetAll().ToList();
+            List<Category> categoriesList = _unitOfWork.CategoryRepo.GetAll().ToList();
             return View(categoriesList);
         }
 
@@ -42,7 +42,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
 
-                _unitOfWork.Category.Add(category);
+                _unitOfWork.CategoryRepo.Add(category);
                 _unitOfWork.Save();
                 TempData["Success"] = "Category Created Successfully";
                 return RedirectToAction(nameof(Index));
@@ -59,7 +59,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var category = _unitOfWork.Category.Get(c => c.Id == categoryId);
+            var category = _unitOfWork.CategoryRepo.Get(c => c.Id == categoryId);
             if (category is null)
             {
                 return NotFound();
@@ -80,7 +80,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                _unitOfWork.Category.Update(category);
+                _unitOfWork.CategoryRepo.Update(category);
                 _unitOfWork.Save();
                 TempData["Success"] = "Category Updated Successfully";
 
@@ -98,7 +98,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var category = _unitOfWork.Category.Get(c => c.Id == categoryId);
+            var category = _unitOfWork.CategoryRepo.Get(c => c.Id == categoryId);
             if (category is null)
             {
                 return NotFound();
@@ -109,12 +109,12 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePost(int? categoryId)
         {
-            var category = _unitOfWork.Category.Get(c => c.Id == categoryId);
+            var category = _unitOfWork.CategoryRepo.Get(c => c.Id == categoryId);
             if (category is null)
             {
                 return NotFound();
             }
-            _unitOfWork.Category.Remove(category);
+            _unitOfWork.CategoryRepo.Remove(category);
             _unitOfWork.Save();
             TempData["Success"] = "Category Deleted Successfully";
             return RedirectToAction(nameof(Index));

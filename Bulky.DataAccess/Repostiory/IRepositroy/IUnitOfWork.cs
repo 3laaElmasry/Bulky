@@ -4,7 +4,9 @@ namespace BulkyBook.DataAccess.Repostiory.IRepositroy
 {
     public interface IUnitOfWork
     {
-        ICategoryRepository Category { get; }
+        ICategoryRepository CategoryRepo { get; }
+
+        IProductRepository ProductRepo { get; }
 
         void Save();
     }
