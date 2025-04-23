@@ -1,6 +1,7 @@
 ﻿using BulkyBook.DataAccess.Repostiory.IRepositroy;
 using BulkyBook.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 
 namespace BulkyBookWeb.Areas.Admin.Controllers
@@ -25,6 +26,13 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Create()
         {
+            IEnumerable<SelectListItem> CategoryList = _unitOfWork.CategoryRepo.GetAll()
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name,
+                });
+            ViewBag.CategoryList = CategoryList;
             return View();
         }
 
@@ -57,6 +65,13 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+            IEnumerable<SelectListItem> CategoryList = _unitOfWork.CategoryRepo.GetAll()
+               .Select(c => new SelectListItem
+               {
+                   Value = c.Id.ToString(),
+                   Text = c.Name,
+               });
+            ViewBag.CategoryList = CategoryList;
             return View(Product);
         }
 
@@ -89,6 +104,15 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
+            IEnumerable<SelectListItem> CategoryList = _unitOfWork.CategoryRepo.GetAll()
+              .Select(c => new SelectListItem
+              {
+                  Value = c.Id.ToString(),
+                  Text = c.Name,
+              });
+            ViewBag.CategoryList = CategoryList;
+
             return View(Product);
         }
 
