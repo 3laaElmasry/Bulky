@@ -43,7 +43,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(ProductVM productVM)
+        public IActionResult UpSert(ProductVM productVM)
         {
 
             if (ModelState.IsValid)
@@ -56,21 +56,6 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             }
             return View(productVM.Product);
         }
-        [HttpPost]
-        public IActionResult Edit(ProductVM productVM)
-        {
-
-            if (ModelState.IsValid)
-            {
-                _unitOfWork.ProductRepo.Update(productVM.Product);
-                _unitOfWork.Save();
-                TempData["Success"] = "Product Updated Successfully";
-
-                return RedirectToAction(nameof(Index));
-            }
-            return View(productVM.Product);
-        }
-
 
         [HttpGet]
         public IActionResult Delete(int? ProductId)
