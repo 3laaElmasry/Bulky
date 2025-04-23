@@ -56,36 +56,6 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             }
             return View(productVM.Product);
         }
-
-
-        [HttpGet]
-        public IActionResult Edit(int? ProductId)
-        {
-            if (ProductId is null or 0)
-            {
-                return NotFound();
-            }
-
-            var Product = _unitOfWork.ProductRepo.Get(c => c.Id == ProductId);
-            if (Product is null)
-            {
-                return NotFound();
-            }
-            IEnumerable<SelectListItem> CategoryList = _unitOfWork.CategoryRepo.GetAll()
-               .Select(c => new SelectListItem
-               {
-                   Value = c.Id.ToString(),
-                   Text = c.Name,
-               });
-
-            ProductVM productVM = new()
-            {
-                CategoryList = CategoryList,
-                Product = Product
-            };
-            return View(productVM);
-        }
-
         [HttpPost]
         public IActionResult Edit(ProductVM productVM)
         {
