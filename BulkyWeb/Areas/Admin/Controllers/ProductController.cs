@@ -1,7 +1,6 @@
 ﻿using BulkyBook.DataAccess.Repostiory.IRepositroy;
 using BulkyBook.Models;
 using BulkyBook.Models.ViewModels;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -58,13 +57,29 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                     string productPath = Path.Combine(wwwRootPath, @"Images/Product");
 
+                    if(!String.IsNullOrEmpty(productVM.Product.ImgUrl))
+                    {
+                        string oldImgPath = Path.Combine(wwwRootPath, productVM.Product.ImgUrl.TrimStart('/'));
+                        if(System.IO.File.Exists(oldImgPath))
+                        {
+                            System.IO.File.Delete(oldImgPath);
+                        }
+                    }
+
                     using (var fileStream = new FileStream(Path.Combine(productPath,fileName),FileMode.Create))
                     {
                         file.CopyTo(fileStream);
                     }
-                    productVM.Product.ImgUrl = @"/Images/Product" + fileName;
+                    productVM.Product.ImgUrl = "/Images/Product/" + fileName;
                 }
-                _unitOfWork.ProductRepo.Add(productVM.Product);
+                if (productVM.Product.Id == 0)
+                {
+                    _unitOfWork.ProductRepo.Add(productVM.Product);
+                }
+                else
+                {
+                    _unitOfWork.ProductRepo.Update(productVM.Product);
+                }
                 _unitOfWork.Save();
                 TempData["Success"] = "Product Created Successfully";
                 return RedirectToAction(nameof(Index));
@@ -108,6 +123,15 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             if (Product is null)
             {
                 return NotFound();
+            }
+            if (!String.IsNullOrEmpty(Product.ImgUrl))
+            {
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                string oldImgPath = Path.Combine(wwwRootPath, Product.ImgUrl.TrimStart('/'));
+                if (System.IO.File.Exists(oldImgPath))
+                {
+                    System.IO.File.Delete(oldImgPath);
+                }
             }
             _unitOfWork.ProductRepo.Remove(Product);
             _unitOfWork.Save();
