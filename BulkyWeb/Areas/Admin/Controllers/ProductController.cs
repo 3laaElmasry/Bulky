@@ -1,5 +1,6 @@
 ﻿using BulkyBook.DataAccess.Repostiory.IRepositroy;
 using BulkyBook.Models;
+using BulkyBook.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -32,23 +33,27 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                     Value = c.Id.ToString(),
                     Text = c.Name,
                 });
-            ViewBag.CategoryList = CategoryList;
-            return View();
+            ProductVM productVM = new()
+            {
+                CategoryList = CategoryList,
+                Product = new Product()
+            };
+            return View(productVM);
         }
 
         [HttpPost]
-        public IActionResult Create(Product Product)
+        public IActionResult Create(ProductVM productVM)
         {
 
             if (ModelState.IsValid)
             {
 
-                _unitOfWork.ProductRepo.Add(Product);
+                _unitOfWork.ProductRepo.Add(productVM.Product);
                 _unitOfWork.Save();
                 TempData["Success"] = "Product Created Successfully";
                 return RedirectToAction(nameof(Index));
             }
-            return View(Product);
+            return View(productVM.Product);
         }
 
 
@@ -71,23 +76,28 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                    Value = c.Id.ToString(),
                    Text = c.Name,
                });
-            ViewBag.CategoryList = CategoryList;
-            return View(Product);
+
+            ProductVM productVM = new()
+            {
+                CategoryList = CategoryList,
+                Product = Product
+            };
+            return View(productVM);
         }
 
         [HttpPost]
-        public IActionResult Edit(Product Product)
+        public IActionResult Edit(ProductVM productVM)
         {
 
             if (ModelState.IsValid)
             {
-                _unitOfWork.ProductRepo.Update(Product);
+                _unitOfWork.ProductRepo.Update(productVM.Product);
                 _unitOfWork.Save();
                 TempData["Success"] = "Product Updated Successfully";
 
                 return RedirectToAction(nameof(Index));
             }
-            return View(Product);
+            return View(productVM.Product);
         }
 
 
@@ -111,9 +121,13 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                   Value = c.Id.ToString(),
                   Text = c.Name,
               });
-            ViewBag.CategoryList = CategoryList;
 
-            return View(Product);
+            ProductVM productVM = new()
+            {
+                CategoryList = CategoryList,
+                Product = Product
+            };
+            return View(productVM);
         }
 
         [HttpPost, ActionName("Delete")]
