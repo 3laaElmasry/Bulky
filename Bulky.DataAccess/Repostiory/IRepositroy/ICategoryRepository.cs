@@ -7,6 +7,6 @@ namespace BulkyBook.DataAccess.Repostiory.IRepositroy
 
         void Update(Category obj);
 
-        void Save();
+        
     }
 }

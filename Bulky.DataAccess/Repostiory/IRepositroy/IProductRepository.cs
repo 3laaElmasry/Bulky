@@ -6,6 +6,6 @@ namespace BulkyBook.DataAccess.Repostiory.IRepositroy
     {
          void Update(Product obj);
 
-        void Save();
+        
     }
 }

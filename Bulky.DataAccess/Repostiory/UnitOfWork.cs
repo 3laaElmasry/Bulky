@@ -19,7 +19,7 @@ namespace BulkyBook.DataAccess.Repostiory
 
         public void Save()
         {
-            CategoryRepo.Save();
+            _db.SaveChanges();
         }
     }
 }

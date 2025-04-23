@@ -44,11 +44,6 @@ namespace BulkyBook.DataAccess.Repostiory
 
         }
 
-        public void Save()
-        {
-            _db.SaveChanges();
-        }
-
         public void Update(Product obj)
         {
             _db.Update(obj);
