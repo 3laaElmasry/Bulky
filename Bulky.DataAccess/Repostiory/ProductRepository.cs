@@ -3,6 +3,7 @@
 using BulkyBook.DataAccess.Data;
 using BulkyBook.DataAccess.Repostiory.IRepositroy;
 using BulkyBook.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace BulkyBook.DataAccess.Repostiory
@@ -29,7 +30,7 @@ namespace BulkyBook.DataAccess.Repostiory
 
         public IEnumerable<Product> GetAll()
         {
-            return _db.Products.ToList();
+            return _db.Products.Include(c => c.Category).ToList();
         }
 
         public void Remove(Product entity)
