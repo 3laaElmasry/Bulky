@@ -25,7 +25,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult UpSert(int? ProductId)//Update - Insert
         {
             IEnumerable<SelectListItem> CategoryList = _unitOfWork.CategoryRepo.GetAll()
                 .Select(c => new SelectListItem
@@ -36,8 +36,9 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             ProductVM productVM = new()
             {
                 CategoryList = CategoryList,
-                Product = new Product()
+                Product = (ProductId is not null and > 0)? _unitOfWork.ProductRepo.Get(c => c.Id == ProductId)! :  new Product()
             };
+           
             return View(productVM);
         }
 
