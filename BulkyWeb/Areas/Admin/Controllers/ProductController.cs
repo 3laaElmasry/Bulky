@@ -3,8 +3,6 @@ using BulkyBook.Models;
 using BulkyBook.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Text.Json.Serialization;
-using System.Text.Json;
 
 
 namespace BulkyBookWeb.Areas.Admin.Controllers
@@ -30,7 +28,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> UpSert(int? ProductId)//Update - Insert
+        public async Task<IActionResult> UpSert(int? productId)//Update - Insert
         {
             IEnumerable<Category> categories = await _unitOfWork.CategoryRepo.GetAllAsync(null);
 
@@ -42,7 +40,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                 });
 
             Product? product = null;
-            product = await _unitOfWork.ProductRepo.GetAsync(c => c.Id == ProductId, null);
+            product = await _unitOfWork.ProductRepo.GetAsync(c => c.Id == productId, null);
 
             if(product is null)
             {
@@ -101,14 +99,14 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Delete(int? ProductId)
+        public async Task<IActionResult> Delete(int? productId)
         {
-            if (ProductId is null or 0)
+            if (productId is null or 0)
             {
                 return NotFound();
             }
 
-            var Product = await _unitOfWork.ProductRepo.GetAsync(c => c.Id == ProductId,null);
+            var Product = await _unitOfWork.ProductRepo.GetAsync(c => c.Id == productId,null);
             if (Product is null)
             {
                 return NotFound();
@@ -161,6 +159,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
             var result = productList.Select(p => new
             {
+                p.Id,
                 p.Title,
                 p.ISBN,
                 p.Price,
