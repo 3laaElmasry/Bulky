@@ -3,6 +3,8 @@ using BulkyBook.Models;
 using BulkyBook.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 
 namespace BulkyBookWeb.Areas.Admin.Controllers
@@ -149,5 +151,27 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             TempData["Success"] = "Product Deleted Successfully";
             return RedirectToAction(nameof(Index));
         }
+
+
+        #region API Calls
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var productList = await _unitOfWork.ProductRepo.GetAllAsync("Category");
+
+            var result = productList.Select(p => new
+            {
+                p.Title,
+                p.ISBN,
+                p.Price,
+                p.Author,
+                CategoryName = p.Category?.Name // Ensures `Category.Name` isn't causing cycles
+            });
+
+            return Json(new { data = result });
+        }
+
+
+        #endregion
     }
 }
