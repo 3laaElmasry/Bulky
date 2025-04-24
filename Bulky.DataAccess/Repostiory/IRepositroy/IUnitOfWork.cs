@@ -8,6 +8,6 @@ namespace BulkyBook.DataAccess.Repostiory.IRepositroy
 
         IProductRepository ProductRepo { get; }
 
-        void Save();
+        Task Save();
     }
 }

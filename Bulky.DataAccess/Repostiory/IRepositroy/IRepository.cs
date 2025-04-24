@@ -1,20 +1,21 @@
 ﻿using System.Linq.Expressions;
-namespace BulkyBook.DataAccess.Repostiory.IRepositroy
+namespace BulkyBook.DataAccess.Repository.IRepository
 {
     public interface IRepository<T> where T : class
     {
-        //T Category
+        // Get all entities asynchronously
+        Task<IEnumerable<T>> GetAllAsync(string? includeProperties);
 
-        IEnumerable<T> GetAll();
+        // Get a single entity asynchronously with filtering
+        Task<T?> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties);
 
-        T? Get(Expression<Func<T,bool>> filter);
+        // Add an entity asynchronously
+        Task AddAsync(T entity);
 
-        void Add(T entity);
+        // Remove an entity
         void Remove(T entity);
 
+        // Remove multiple entities
         void RemoveRange(IEnumerable<T> entities);
-
-
-
     }
 }

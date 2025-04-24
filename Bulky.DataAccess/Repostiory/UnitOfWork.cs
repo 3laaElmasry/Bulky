@@ -17,9 +17,9 @@ namespace BulkyBook.DataAccess.Repostiory
             ProductRepo = new ProductRepository(_db);
         }
 
-        public void Save()
+        public async Task Save()
         {
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
     }
 }

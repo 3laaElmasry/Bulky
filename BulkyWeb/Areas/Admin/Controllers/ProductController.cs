@@ -23,7 +23,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            List<Product> categoriesList = _unitOfWork.ProductRepo.GetAll().ToList();
+            List<Product> categoriesList = _unitOfWork.ProductRepo.GetAll(includeProprties : true).ToList();
             return View(categoriesList);
         }
 
