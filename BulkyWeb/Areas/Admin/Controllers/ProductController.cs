@@ -98,59 +98,6 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             return View(productVM.Product);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Delete(int? productId)
-        {
-            if (productId is null or 0)
-            {
-                return NotFound();
-            }
-
-            var Product = await _unitOfWork.ProductRepo.GetAsync(c => c.Id == productId,null);
-            if (Product is null)
-            {
-                return NotFound();
-            }
-            IEnumerable<Category> categories = await _unitOfWork.CategoryRepo.GetAllAsync(null);
-            IEnumerable<SelectListItem> CategoryList = categories
-              .Select(c => new SelectListItem
-              {
-                  Value = c.Id.ToString(),
-                  Text = c.Name,
-              });
-
-            ProductVM productVM = new()
-            {
-                CategoryList = CategoryList,
-                Product = Product
-            };
-            return View(productVM);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeletePost(int? ProductId)
-        {
-            var Product = await _unitOfWork.ProductRepo.GetAsync(c => c.Id == ProductId, null);
-            if (Product is null)
-            {
-                return NotFound();
-            }
-            if (!String.IsNullOrEmpty(Product.ImgUrl))
-            {
-                string wwwRootPath = _webHostEnvironment.WebRootPath;
-                string oldImgPath = Path.Combine(wwwRootPath, Product.ImgUrl.TrimStart('/'));
-                if (System.IO.File.Exists(oldImgPath))
-                {
-                    System.IO.File.Delete(oldImgPath);
-                }
-            }
-            _unitOfWork.ProductRepo.Remove(Product);
-            await _unitOfWork.Save();
-            TempData["Success"] = "Product Deleted Successfully";
-            return RedirectToAction(nameof(Index));
-        }
-
-
         #region API Calls
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -168,6 +115,30 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             });
 
             return Json(new { data = result });
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int? ProductId)
+        {
+            var Product = await _unitOfWork.ProductRepo.GetAsync(c => c.Id == ProductId, null);
+            if (Product is null)
+            {
+                return Json(new { success = false, message = "Errorr While Deleting" });
+            }
+            if (!String.IsNullOrEmpty(Product.ImgUrl))
+            {
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                string oldImgPath = Path.Combine(wwwRootPath, Product.ImgUrl.TrimStart('/'));
+                if (System.IO.File.Exists(oldImgPath))
+                {
+                    System.IO.File.Delete(oldImgPath);
+                }
+            }
+            _unitOfWork.ProductRepo.Remove(Product);
+            TempData["Success"] = "Delete Successfully";
+            await _unitOfWork.Save();
+
+            return Json(new { success = true, message = "Delete Success" });
         }
 
 
