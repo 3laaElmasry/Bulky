@@ -21,32 +21,43 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            List<Product> categoriesList = _unitOfWork.ProductRepo.GetAll(includeProprties : true).ToList();
+            IEnumerable<Product> categoriesList = await _unitOfWork.ProductRepo.GetAllAsync("Category");
             return View(categoriesList);
         }
 
         [HttpGet]
-        public IActionResult UpSert(int? ProductId)//Update - Insert
+        public async Task<IActionResult> UpSert(int? ProductId)//Update - Insert
         {
-            IEnumerable<SelectListItem> CategoryList = _unitOfWork.CategoryRepo.GetAll()
+            IEnumerable<Category> categories = await _unitOfWork.CategoryRepo.GetAllAsync(null);
+
+            IEnumerable<SelectListItem> CategoryList = categories
                 .Select(c => new SelectListItem
                 {
                     Value = c.Id.ToString(),
                     Text = c.Name,
                 });
+
+            Product? product = null;
+            product = await _unitOfWork.ProductRepo.GetAsync(c => c.Id == ProductId, null);
+
+            if(product is null)
+            {
+                product = new Product();
+            }
             ProductVM productVM = new()
             {
                 CategoryList = CategoryList,
-                Product = (ProductId is not null and > 0)? _unitOfWork.ProductRepo.Get(c => c.Id == ProductId)! :  new Product()
+                
+                Product = product
             };
            
             return View(productVM);
         }
 
         [HttpPost]
-        public IActionResult UpSert(ProductVM productVM,IFormFile? file)
+        public async Task<IActionResult> UpSert(ProductVM productVM,IFormFile? file)
         {
 
             if (ModelState.IsValid)
@@ -74,13 +85,13 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                 }
                 if (productVM.Product.Id == 0)
                 {
-                    _unitOfWork.ProductRepo.Add(productVM.Product);
+                   await _unitOfWork.ProductRepo.AddAsync(productVM.Product);
                 }
                 else
                 {
                     _unitOfWork.ProductRepo.Update(productVM.Product);
                 }
-                _unitOfWork.Save();
+                await _unitOfWork.Save();
                 TempData["Success"] = "Product Created Successfully";
                 return RedirectToAction(nameof(Index));
             }
@@ -88,20 +99,20 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult Delete(int? ProductId)
+        public async Task<IActionResult> Delete(int? ProductId)
         {
             if (ProductId is null or 0)
             {
                 return NotFound();
             }
 
-            var Product = _unitOfWork.ProductRepo.Get(c => c.Id == ProductId);
+            var Product = await _unitOfWork.ProductRepo.GetAsync(c => c.Id == ProductId,null);
             if (Product is null)
             {
                 return NotFound();
             }
-
-            IEnumerable<SelectListItem> CategoryList = _unitOfWork.CategoryRepo.GetAll()
+            IEnumerable<Category> categories = await _unitOfWork.CategoryRepo.GetAllAsync(null);
+            IEnumerable<SelectListItem> CategoryList = categories
               .Select(c => new SelectListItem
               {
                   Value = c.Id.ToString(),
@@ -117,9 +128,9 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeletePost(int? ProductId)
+        public async Task<IActionResult> DeletePost(int? ProductId)
         {
-            var Product = _unitOfWork.ProductRepo.Get(c => c.Id == ProductId);
+            var Product = await _unitOfWork.ProductRepo.GetAsync(c => c.Id == ProductId, null);
             if (Product is null)
             {
                 return NotFound();
@@ -134,7 +145,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                 }
             }
             _unitOfWork.ProductRepo.Remove(Product);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             TempData["Success"] = "Product Deleted Successfully";
             return RedirectToAction(nameof(Index));
         }

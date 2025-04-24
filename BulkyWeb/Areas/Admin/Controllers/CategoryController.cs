@@ -16,9 +16,9 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            List<Category> categoriesList = _unitOfWork.CategoryRepo.GetAll().ToList();
+            IEnumerable<Category> categoriesList = await _unitOfWork.CategoryRepo.GetAllAsync(null);
             return View(categoriesList);
         }
 
@@ -29,7 +29,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Category category)
+        public async Task<IActionResult> Create(Category category)
         {
 
             if (category.Name is not null &&
@@ -42,8 +42,8 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
 
-                _unitOfWork.CategoryRepo.Add(category);
-                _unitOfWork.Save();
+                await _unitOfWork.CategoryRepo.AddAsync(category);
+                await _unitOfWork.Save();
                 TempData["Success"] = "Category Created Successfully";
                 return RedirectToAction(nameof(Index));
             }
@@ -52,14 +52,14 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
 
         [HttpGet]
-        public IActionResult Edit(int? categoryId)
+        public async Task<IActionResult> Edit(int? categoryId)
         {
             if (categoryId is null or 0)
             {
                 return NotFound();
             }
 
-            var category = _unitOfWork.CategoryRepo.Get(c => c.Id == categoryId);
+            var category = await _unitOfWork.CategoryRepo.GetAsync(c => c.Id == categoryId,null);
             if (category is null)
             {
                 return NotFound();
@@ -68,7 +68,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Category category)
+        public async Task<IActionResult> Edit(Category category)
         {
 
             if (category.Name is not null &&
@@ -81,7 +81,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 _unitOfWork.CategoryRepo.Update(category);
-                _unitOfWork.Save();
+                await _unitOfWork.Save();
                 TempData["Success"] = "Category Updated Successfully";
 
                 return RedirectToAction(nameof(Index));
@@ -91,14 +91,14 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
 
         [HttpGet]
-        public IActionResult Delete(int? categoryId)
+        public async Task<IActionResult> Delete(int? categoryId)
         {
             if (categoryId is null or 0)
             {
                 return NotFound();
             }
 
-            var category = _unitOfWork.CategoryRepo.Get(c => c.Id == categoryId);
+            var category = await _unitOfWork.CategoryRepo.GetAsync(c => c.Id == categoryId, null);
             if (category is null)
             {
                 return NotFound();
@@ -107,15 +107,15 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeletePost(int? categoryId)
+        public async Task<IActionResult> DeletePost(int? categoryId)
         {
-            var category = _unitOfWork.CategoryRepo.Get(c => c.Id == categoryId);
+            var category = await _unitOfWork.CategoryRepo.GetAsync(c => c.Id == categoryId, null);
             if (category is null)
             {
                 return NotFound();
             }
             _unitOfWork.CategoryRepo.Remove(category);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             TempData["Success"] = "Category Deleted Successfully";
             return RedirectToAction(nameof(Index));
         }
