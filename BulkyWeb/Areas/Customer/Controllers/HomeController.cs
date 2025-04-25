@@ -28,6 +28,19 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             return View(productList);
         }
 
+        public async Task<IActionResult> Details(int id)
+        {
+            Product? product = await _unitOfWork.ProductRepo
+                .GetAsync(p => p.Id == id,includeProperties: "Category");
+
+            if(product is null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
+        }
+
         public IActionResult Privacy()
         {
             return View();
