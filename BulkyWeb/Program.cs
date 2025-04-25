@@ -3,6 +3,7 @@ using BulkyBook.DataAccess.Data;
 using BulkyBook.DataAccess.Repostiory;
 using BulkyBook.DataAccess.Repostiory.IRepositroy;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     (builder.Configuration.GetConnectionString("defaultConnection"), sqlServerOptions => sqlServerOptions.EnableRetryOnFailure());
         
 });
+
+builder.Services.AddDefaultIdentity<IdentityUser>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddRazorPages();
 
 builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 
@@ -30,11 +36,11 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
-
+app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}")
