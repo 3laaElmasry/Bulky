@@ -4,6 +4,7 @@ using BulkyBook.DataAccess.Repostiory;
 using BulkyBook.DataAccess.Repostiory.IRepositroy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using BulkyBook.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         
 });
 
-builder.Services.AddDefaultIdentity<IdentityUser>()
+builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+{
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireDigit = false;
+})
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddRazorPages();
