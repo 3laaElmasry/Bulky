@@ -83,16 +83,20 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                     }
                     productVM.Product.ImgUrl = "/Images/Product/" + fileName;
                 }
+                string message = "";
                 if (productVM.Product.Id == 0)
                 {
                    await _unitOfWork.ProductRepo.AddAsync(productVM.Product);
+                    message = "Created";
                 }
                 else
                 {
                     _unitOfWork.ProductRepo.Update(productVM.Product);
+                    message = "Edited";
+
                 }
                 await _unitOfWork.Save();
-                TempData["Success"] = "Product Created Successfully";
+                TempData["Success"] = $"Product {message} Successfully";
                 return RedirectToAction(nameof(Index));
             }
             return View(productVM.Product);

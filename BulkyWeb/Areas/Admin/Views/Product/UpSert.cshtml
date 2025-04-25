@@ -14,7 +14,7 @@
 	</div>
 	<div class="card-body p-4">
 		<form asp-action="UpSert" asp-controller="Product" asp-area="Admin" method="post" class="row" enctype="multipart/form-data">
-			<input asp-for="Product.Id" hidden name="ProductId" />
+			<input asp-for="Product.Id" hidden/>
 			<input asp-for="Product.ImgUrl" hidden  />
 
 			<div class="row">
