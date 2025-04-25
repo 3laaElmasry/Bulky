@@ -16,8 +16,8 @@
                                 <p class="card-title h5 text-dark opacity-75 text-uppercase text-center">
                                     @product.Title
                                 </p>
-                                <p class="card-title h5 text-warning opacity-75 text-uppercase text-center">
-                                    @product.Author
+                                <p class="card-title text-warning text-center">
+                                    by <b>@product.Author</b>
                                 </p>
                             </div>
                             <div class="pl-1">
@@ -39,7 +39,7 @@
                            
                         </div>
                         <div>
-                            <a asp-action="Details" asp-route-id="@product.Id" asp-area="Customer" asp-controller="Home" class="btn btn-primary bg-gradient border-0 form-control">
+                            <a asp-action="Details" asp-route-productId="@product.Id" asp-area="Customer" asp-controller="Home" class="btn btn-primary bg-gradient border-0 form-control">
                                 Details
                             </a>
                         </div>

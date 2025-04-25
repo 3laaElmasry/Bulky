@@ -28,10 +28,10 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             return View(productList);
         }
 
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int productId)
         {
             Product? product = await _unitOfWork.ProductRepo
-                .GetAsync(p => p.Id == id,includeProperties: "Category");
+                .GetAsync(p => p.Id == productId,includeProperties: "Category");
 
             if(product is null)
             {
