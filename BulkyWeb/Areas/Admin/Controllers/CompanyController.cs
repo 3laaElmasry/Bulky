@@ -1,11 +1,8 @@
 ﻿using BulkyBook.DataAccess.Repostiory.IRepositroy;
 using BulkyBook.Models;
-using BulkyBook.Models.ViewModels;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-
 
 namespace BulkyBookWeb.Areas.Admin.Controllers
 {
@@ -24,7 +21,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            IEnumerable<Company> companyList = await _unitOfWork.CompanyRepo.GetAllAsync("Category");
+            IEnumerable<Company> companyList = await _unitOfWork.CompanyRepo.GetAllAsync(null);
             return View(companyList);
         }
 
@@ -74,7 +71,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var CompanyList = await _unitOfWork.CompanyRepo.GetAllAsync("Category");
+            var CompanyList = await _unitOfWork.CompanyRepo.GetAllAsync(null);
 
             var result = CompanyList.Select(c => new
             {
@@ -83,7 +80,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                 c.StreetAddress,
                 c.PhoneNumber,
                 c.City,
-                c.State // Ensures `Category.Name` isn't causing cycles
+                c.State 
             });
 
             return Json(new { data = result });
