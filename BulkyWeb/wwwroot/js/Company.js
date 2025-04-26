@@ -12,10 +12,10 @@ function loadDataTable() {
         },
         "columns": [
             { data: 'name', "width": "25%" },
-            { data: 'streetaddress', "width": "15%" },
+            { data: 'streetAddress', "width": "15%" },
             { data: 'city', "width": "10%" },
             { data: 'state', "width": "15%" },
-            { data: 'phonenumber', "width": "10%" },
+            { data: 'phoneNumber', "width": "10%" },
             {
                 data: 'id',
                 "render": function (data) {
