@@ -65,10 +65,16 @@
 						<span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
 					</div>
 					<div class="form-floating mb-3 col-6">
-						<select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select" autocomplete="new-password">
+						<select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select">
 							<option disabled selected>--Select Role--</option>
 						</select>
 						<label asp-for="Input.Role" class="ms-2 text-muted">Chose Role </label>
+					</div>
+					<div class="form-floating mb-3 col-6">
+						<select  asp-for="Input.CompanyId" asp-items="@Model.Input.CompanyList" class="form-select">
+							<option disabled selected>--Select Company--</option>
+						</select>
+						<label asp-for="Input.CompanyId" class="ms-2 text-muted">Chose Company </label>
 					</div>
 					<div class="col-12">
 						<button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>

@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using BulkyBook.DataAccess.Repostiory.IRepositroy;
 using BulkyBook.Models;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authentication;
@@ -35,6 +36,7 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IUnitOfWork _unitOfWork;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
@@ -42,7 +44,8 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
             SignInManager<IdentityUser> signInManager,
             RoleManager<IdentityRole> roleManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -51,6 +54,7 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _roleManager = roleManager;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -113,6 +117,12 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
             public IEnumerable<SelectListItem> RoleList { get; set; }
 
 
+            
+
+            [ValidateNever]
+            public IEnumerable<SelectListItem> CompanyList { get; set; }
+
+
             [Required]
             public string Name { get; set; }
 
@@ -120,8 +130,8 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
             public string City { get; set; }
             public string State { get; set; }
             public string PostalCode { get; set; }
-
             public string PhoneNumber { get; set; }
+            public int CompanyId { get; set; }
         }
 
 
@@ -135,13 +145,23 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
                 await _roleManager.CreateAsync(new IdentityRole { Name = SD.Role_Employee });
             }
 
+            var companies = await _unitOfWork.CompanyRepo.GetAllAsync(null);
+
             Input = new()
             {
-                RoleList = _roleManager.Roles.Select(r => r.Name).Select(i => new SelectListItem
+                RoleList = _roleManager.Roles.Select(i => new SelectListItem
                 {
-                    Text = i,
-                    Value = i
+                    Text = i.Name,
+                    Value = i.Id
+                }),
+
+
+                CompanyList = companies.Select(c => new SelectListItem
+                {
+                    Text = c.Name,
+                    Value = c.Name
                 })
+
             };
             
             ReturnUrl = returnUrl;
@@ -165,6 +185,11 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
                 user.State = Input.State;
                 user.PostalCode = Input.PostalCode;
                 user.StreetAddress = Input.StreetAddress;
+
+                if(Input.CompanyId > 0)
+                {
+                    user.CompanyId = Input.CompanyId;
+                }
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
