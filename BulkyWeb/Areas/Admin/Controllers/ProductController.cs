@@ -26,8 +26,8 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            IEnumerable<Product> categoriesList = await _unitOfWork.ProductRepo.GetAllAsync("Category");
-            return View(categoriesList);
+            IEnumerable<Product> productList = await _unitOfWork.ProductRepo.GetAllAsync("Category");
+            return View(productList);
         }
 
         [HttpGet]
