@@ -11,6 +11,9 @@ namespace BulkyBook.DataAccess.Repostiory
 
         public ICompanyRepository CompanyRepo { get; private set;}
 
+        public IShoppingCartRepository ShoppingCartRepo { get; private set; }
+
+
         private readonly ApplicationDbContext _db;
         public UnitOfWork(ApplicationDbContext db)
         {
@@ -18,6 +21,7 @@ namespace BulkyBook.DataAccess.Repostiory
             CategoryRepo = new CategoryRepository(_db);
             ProductRepo = new ProductRepository(_db);
             CompanyRepo = new CompanyRepository(_db);
+            ShoppingCartRepo = new ShoppingCartRepository(_db);
         }
 
         public async Task Save()

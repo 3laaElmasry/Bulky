@@ -10,6 +10,9 @@ namespace BulkyBook.DataAccess.Repostiory.IRepositroy
 
         ICompanyRepository CompanyRepo { get; }
 
+        IShoppingCartRepository ShoppingCartRepo { get; }
+
+
         Task Save();
     }
 }
