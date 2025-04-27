@@ -186,7 +186,7 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
                 user.PostalCode = Input.PostalCode;
                 user.StreetAddress = Input.StreetAddress;
 
-                if(Input.CompanyId > 0)
+                if(Input.Role == SD.Role_Company)
                 {
                     user.CompanyId = Input.CompanyId;
                 }
