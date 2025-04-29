@@ -7,7 +7,7 @@ namespace BulkyBook.DataAccess.Repository.IRepository
         Task<IEnumerable<T>> GetAllAsync(string? includeProperties);
 
         // Get a single entity asynchronously with filtering
-        Task<T?> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties);
+        Task<T?> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties,bool tracked = false);
 
         // Add an entity asynchronously
         Task AddAsync(T entity);

@@ -54,7 +54,7 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             shoppingCart.ApplicationUserId = userId;
 
             var cartFromDb = await _unitOfWork.ShoppingCartRepo.GetAsync(c => c.ApplicationUserId == userId
-            && c.ProductId == shoppingCart.ProductId,null);
+            && c.ProductId == shoppingCart.ProductId,null,true);
 
             if (cartFromDb != null)
             {

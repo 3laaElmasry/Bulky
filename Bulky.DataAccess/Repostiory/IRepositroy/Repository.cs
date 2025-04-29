@@ -21,9 +21,20 @@ namespace BulkyBook.DataAccess.Repository.IRepository
             await dbSet.AddAsync(entity);
         }
 
-        public async Task<T?> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties)
+        public async Task<T?> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties, bool tracked = false)
         {
-            IQueryable<T> query = dbSet.Where(filter);
+            IQueryable<T> query;
+
+            if (tracked)
+            {
+                query = dbSet;
+            }
+            else
+            {
+                query = dbSet.AsNoTracking();
+            }
+            
+            query = query.Where(filter);
 
             if (!string.IsNullOrEmpty(includeProperties))
             {
