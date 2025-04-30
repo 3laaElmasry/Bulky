@@ -19,6 +19,7 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             _unitOfWork = unitOfWork;
         }
 
+
         public async Task<IActionResult> Index()
         {
             var claimsIdentity = User.Identity as ClaimsIdentity;
@@ -55,6 +56,42 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
                     return shoppingCart.Product!.Price100;
                 }
             }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Plus(int cartId)
+        {
+            var cartFromDb = await _unitOfWork.ShoppingCartRepo.GetAsync(c => c.Id == cartId,null,tracked:true);
+            cartFromDb!.Count += 1;
+            await _unitOfWork.Save();
+
+            return RedirectToAction(nameof(Index));
+        }
+        [HttpGet]
+        public async Task<IActionResult> Minus(int cartId)
+        {
+            var cartFromDb = await _unitOfWork.ShoppingCartRepo.GetAsync(c => c.Id == cartId, null, tracked: true);
+            if(cartFromDb!.Count <= 1)
+            {
+                //Remove
+                _unitOfWork.ShoppingCartRepo.Remove(cartFromDb!);
+            }
+            else
+            {
+                cartFromDb!.Count -= 1;
+            }
+            await _unitOfWork.Save();
+
+            return RedirectToAction(nameof(Index));
+        }
+        [HttpGet]
+        public async Task<IActionResult> Remove(int cartId)
+        {
+            var cartFromDb = await _unitOfWork.ShoppingCartRepo.GetAsync(c => c.Id == cartId, null);
+             _unitOfWork.ShoppingCartRepo.Remove(cartFromDb!);
+            await _unitOfWork.Save();
+            return RedirectToAction(nameof(Index));
         }
     }
 }
