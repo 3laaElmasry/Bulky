@@ -16,14 +16,13 @@ namespace BulkyBook.Models
         [Range(1,1000,ErrorMessage = "Please Enter a value bewteen 1-1000")]
         public int Count { get; set; }
 
-        [ForeignKey("Product")]
         public int ProductId { get; set; }
 
-        
-        public double Price { get; set; }
-
+        [ForeignKey("ProductId")]
         [ValidateNever]
-        public Product? Product { get; set; } 
+        public Product? Product { get; set; }
+
+        public double Price { get; set; }
 
         [ForeignKey("ApplicationUser")]
         [Required]
