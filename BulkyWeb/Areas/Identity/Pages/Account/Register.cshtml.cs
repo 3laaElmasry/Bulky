@@ -152,14 +152,14 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
                 RoleList = _roleManager.Roles.Select(i => new SelectListItem
                 {
                     Text = i.Name,
-                    Value = i.Id
+                    Value = i.Name,
                 }),
 
 
                 CompanyList = companies.Select(c => new SelectListItem
                 {
                     Text = c.Name,
-                    Value = c.Name
+                    Value = c.Id.ToString()
                 })
 
             };
@@ -197,7 +197,7 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
                 {
                     if (!String.IsNullOrEmpty(Input.Role))
                     {
-                        await _userManager.AddToRoleAsync(user, Input.Role);
+                        await _userManager.AddToRoleAsync(user,Input.Role);
                     }
                     else
                     {

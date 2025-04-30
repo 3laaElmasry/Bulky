@@ -140,13 +140,13 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             var claimsIdentity = User.Identity as ClaimsIdentity;
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            ShoppingCartVM.ShoppingCartList = await _unitOfWork.ShoppingCartRepo
+            ShoppingCartVM!.ShoppingCartList = await _unitOfWork.ShoppingCartRepo
                 .GetAllAsync(c => c.ApplicationUserId == userId, "Product");
 
             ShoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
             ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
 
-            ShoppingCartVM.OrderHeader.ApplicationUser = await _unitOfWork.ApplicationUserRepo.GetAsync(u => u.Id == userId, null);
+            ApplicationUser? applicationUser = await _unitOfWork.ApplicationUserRepo.GetAsync(u => u.Id == userId, null);
             
             foreach (var cart in ShoppingCartVM.ShoppingCartList)
             {
@@ -156,7 +156,7 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
 
             
 
-            if(ShoppingCartVM.OrderHeader.ApplicationUser!.CompanyId.GetValueOrDefault() == 0)
+            if(applicationUser!.CompanyId.GetValueOrDefault() == 0)
             {
                 ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
                 ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
@@ -186,7 +186,17 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
                 await _unitOfWork.OrderDetailRepo.AddAsync(orderDetail);
                 await _unitOfWork.Save();
             }
-            return View(ShoppingCartVM);
+
+            if (applicationUser!.CompanyId.GetValueOrDefault() == 0)
+            { 
+
+            }
+            return RedirectToAction(nameof(OrderConfirmation),new {id = ShoppingCartVM.OrderHeader.Id});
+        }
+
+        public IActionResult OrderConfirmation(int id)
+        {
+            return View(id);
         }
 
     }
