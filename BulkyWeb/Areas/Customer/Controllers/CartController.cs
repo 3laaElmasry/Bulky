@@ -1,4 +1,5 @@
 ﻿using BulkyBook.DataAccess.Repostiory.IRepositroy;
+using BulkyBook.Models;
 using BulkyBook.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +28,33 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             {
                 ShoppingCartList = await _unitOfWork.ShoppingCartRepo.GetAllAsync(c => c.ApplicationUserId == userId,"Product"),
             };
+
+            foreach (var cart in ShoppingCartVM.ShoppingCartList)
+            {
+                cart.Price = GetPriceBasedOnQuantity(cart);
+                ShoppingCartVM.OrderTotal += (cart.Price * cart.Count);
+            }
             return View(ShoppingCartVM);
+        }
+
+
+        private double GetPriceBasedOnQuantity(ShoppingCart shoppingCart)
+        {
+            if (shoppingCart.Count <= 50)
+            {
+                return shoppingCart.Product!.Price;
+            }
+            else
+            {
+                if (shoppingCart.Count <= 100)
+                {
+                    return shoppingCart.Product!.Price50;
+                }
+                else
+                {
+                    return shoppingCart.Product!.Price100;
+                }
+            }
         }
     }
 }

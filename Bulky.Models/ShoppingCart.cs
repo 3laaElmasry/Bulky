@@ -19,6 +19,9 @@ namespace BulkyBook.Models
         [ForeignKey("Product")]
         public int ProductId { get; set; }
 
+        
+        public double Price { get; set; }
+
         [ValidateNever]
         public Product? Product { get; set; } 
 
