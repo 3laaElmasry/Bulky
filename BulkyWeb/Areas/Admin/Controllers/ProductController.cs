@@ -26,7 +26,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            IEnumerable<Product> productList = await _unitOfWork.ProductRepo.GetAllAsync("Category");
+            IEnumerable<Product> productList = await _unitOfWork.ProductRepo.GetAllAsync(includeProperties : "Category");
             return View(productList);
         }
 
@@ -109,7 +109,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var productList = await _unitOfWork.ProductRepo.GetAllAsync("Category");
+            var productList = await _unitOfWork.ProductRepo.GetAllAsync(includeProperties: "Category");
 
             var result = productList.Select(p => new
             {
