@@ -59,10 +59,12 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             if (cartFromDb != null)
             {
                 cartFromDb.Count += shoppingCart.Count;
+                TempData["Success"] = "Cart Updated Successfully";
             }
             else
             {
                 await _unitOfWork.ShoppingCartRepo.AddAsync(shoppingCart);
+                TempData["Success"] = "Cart Created Successfully";
 
             }
             await _unitOfWork.Save();
