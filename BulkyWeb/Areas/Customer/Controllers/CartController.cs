@@ -93,5 +93,12 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             await _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
+
+
+        [HttpGet]
+        public IActionResult Summary()
+        {
+            return View();
+        }
     }
 }
