@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using BulkyBook.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using BulkyBook.Utility;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     (builder.Configuration.GetConnectionString("defaultConnection"), sqlServerOptions => sqlServerOptions.EnableRetryOnFailure());
         
 });
+
+
+builder.Services.Configure<StripeSettings>(
+    builder.Configuration.GetSection("Stripe")
+    );
 
 builder.Services.AddIdentity<IdentityUser,IdentityRole>(options =>
 {
@@ -59,6 +65,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:Secretkey").Value;
 app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
