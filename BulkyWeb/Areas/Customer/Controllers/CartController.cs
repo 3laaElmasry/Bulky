@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
 using Stripe.Checkout;
+using System.Diagnostics;
 using System.Security.Claims;
 using static System.Net.WebRequestMethods;
 
@@ -237,8 +238,32 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             return RedirectToAction(nameof(OrderConfirmation), new { id = ShoppingCartVM.OrderHeader.Id });
         }
 
-        public IActionResult OrderConfirmation(int id)
+        public async Task<IActionResult> OrderConfirmation(int id)
         {
+
+            OrderHeader orderHeader = await _unitOfWork.OrderHeaderRepo.GetAsync(o => o.Id == id,null);
+            if(orderHeader.PaymentStatus != SD.PaymentStatusDelayedPayment)
+            {
+                //Customer User
+
+                var service = new SessionService();
+
+                Session session = service.Get(orderHeader.SessionId);
+
+                if(session.PaymentStatus.ToLower() == "paid")
+                {
+                    await _unitOfWork.OrderHeaderRepo.UpdateStripePaymentId(id,session.Id,session.PaymentIntentId);
+                    await _unitOfWork.OrderHeaderRepo.UpdateStatus(id,SD.StatusApproved, SD.PaymentStatusApproved);
+                    await _unitOfWork.Save();
+                }
+
+                List<ShoppingCart> shoppingCarts = _unitOfWork.ShoppingCartRepo
+                    .GetAllAsync(c => c.ApplicationUserId == orderHeader.ApplicationUserId).Result.ToList();
+
+                _unitOfWork.ShoppingCartRepo.RemoveRange(shoppingCarts);
+                await _unitOfWork.Save();
+
+            }
             return View(id);
         }
 
