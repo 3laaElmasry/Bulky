@@ -4,7 +4,10 @@ using BulkyBook.Models.ViewModels;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
+using Stripe.Checkout;
 using System.Security.Claims;
+using static System.Net.WebRequestMethods;
 
 namespace BulkyBookWeb.Areas.Customer.Controllers
 {
@@ -188,10 +191,50 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             }
 
             if (applicationUser!.CompanyId.GetValueOrDefault() == 0)
-            { 
+            {
+                string domain = "https://localhost:7180/";
+                var options = new Stripe.Checkout.SessionCreateOptions
+                {
 
+                    SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.Id}",
+                    CancelUrl = domain + $"customer/cart/index",
+                    Mode = "payment",
+                    LineItems = new List<Stripe.Checkout.SessionLineItemOptions>()
+                };
+
+                foreach(var item in ShoppingCartVM.ShoppingCartList)
+                {
+                    var sessionLineItem = new SessionLineItemOptions
+                    {
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                            UnitAmount = (long)(item.Price * 100),
+                            Currency = "usd",
+                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name = item.Product!.Title,
+
+                            }
+                        },
+                        Quantity = item.Count
+                        
+                    };
+                    options.LineItems.Add(sessionLineItem);
+                }
+
+                var service = new SessionService();
+                Session session = service.Create(options);
+
+                await _unitOfWork.OrderHeaderRepo.UpdateStripePaymentId
+                    (ShoppingCartVM.OrderHeader.Id,session.Id,session.PaymentIntentId );
+
+                await _unitOfWork.Save();
+
+                Response.Headers.Add("Location", session.Url);
+
+                return new StatusCodeResult(StatusCodes.Status303SeeOther);
             }
-            return RedirectToAction(nameof(OrderConfirmation),new {id = ShoppingCartVM.OrderHeader.Id});
+            return RedirectToAction(nameof(OrderConfirmation), new { id = ShoppingCartVM.OrderHeader.Id });
         }
 
         public IActionResult OrderConfirmation(int id)
