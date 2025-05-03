@@ -14,6 +14,9 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
     public class OrderController : Controller
     {
 
+        [BindProperty]
+        public OrderVM orderVM { get; set; }
+
         private readonly IUnitOfWork _unitOfWork;
 
         public OrderController(IUnitOfWork unitOfWork)
@@ -32,7 +35,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int orderId)
         {
-            OrderVM orderVM = new OrderVM()
+            orderVM = new OrderVM()
             {
                 OrderHeader = await _unitOfWork.OrderHeaderRepo
                 .GetAsync(o => o.Id == orderId, includeProperties:"ApplicationUser"),
@@ -40,6 +43,39 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                 .GetAllAsync(o => o.OrderHeaderId == orderId, includeProperties:"Product"),
             };
             return View(orderVM);
+        }
+
+        [HttpPost]
+        [Authorize(Roles =$"{SD.Role_Admin},{SD.Role_Employee}")]
+        public async Task<IActionResult> UpdateOrderDetials()
+        {
+            OrderHeader? orderHeaderFromdb = await _unitOfWork.OrderHeaderRepo
+                .GetAsync(o => o.Id == orderVM.OrderHeader.Id, null);
+
+            if (orderHeaderFromdb is not null)
+            {
+                orderHeaderFromdb.Name = orderVM.OrderHeader.Name;
+                orderHeaderFromdb.PhoneNumber = orderVM.OrderHeader.PhoneNumber;
+                orderHeaderFromdb.StreetAddress = orderVM.OrderHeader.StreetAddress;
+                orderHeaderFromdb.City = orderVM.OrderHeader.City;
+                orderHeaderFromdb.State = orderVM.OrderHeader.State;
+                orderHeaderFromdb.PostalCode = orderVM.OrderHeader.PostalCode;
+
+                if(!String.IsNullOrEmpty(orderHeaderFromdb.Carrier))
+                {
+                    orderHeaderFromdb.Carrier = orderVM.OrderHeader.Carrier;
+                }
+
+                if(!String.IsNullOrEmpty(orderHeaderFromdb.TrackingNumber))
+                {
+                    orderHeaderFromdb.TrackingNumber = orderVM.OrderHeader.TrackingNumber;
+                }
+                _unitOfWork.OrderHeaderRepo.Update(orderHeaderFromdb);
+                await _unitOfWork.Save();
+                TempData["Success"] = "Order Details Updated Successfully.";
+            }
+
+            return RedirectToAction(nameof(Details), new {orderId = orderHeaderFromdb?.Id});
         }
 
         #region API Calls
