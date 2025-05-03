@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace BulkyBookWeb.Areas.Admin.Controllers
 {
@@ -82,9 +83,21 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll(string status)
         {
-            IEnumerable<OrderHeader> orderHeaderList = await _unitOfWork.OrderHeaderRepo
-                .GetAllAsync(includeProperties: "ApplicationUser");
+            IEnumerable<OrderHeader> orderHeaderList;
 
+            if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
+            {
+                orderHeaderList = await _unitOfWork.OrderHeaderRepo
+                .GetAllAsync(includeProperties: "ApplicationUser");
+            }
+            else
+            {
+                var claimsIdentity = User.Identity as ClaimsIdentity;
+                var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+                orderHeaderList = await _unitOfWork.OrderHeaderRepo
+                .GetAllAsync(includeProperties: "ApplicationUser",filter: o => o.ApplicationUserId == userId);
+                
+            }
             switch (status)
             {
                 case "pending":
