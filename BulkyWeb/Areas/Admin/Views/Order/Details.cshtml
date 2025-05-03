@@ -125,7 +125,7 @@
 								<div class="col-9">
 									@if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
 									{
-										<input asp-for="OrderHeader.Carrier" type="text" class="form-control" />
+										<input asp-for="OrderHeader.Carrier" id="carrier" type="text" class="form-control" />
 									}
 									else
 									{
@@ -138,7 +138,7 @@
 								<div class="col-9">
 									@if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
 									{
-										<input asp-for="OrderHeader.TrackingNumber" type="text" class="form-control" />
+										<input asp-for="OrderHeader.TrackingNumber" id="trackingNumber" type="text" class="form-control" />
 									}
 									else
 									{
@@ -252,20 +252,20 @@
 
 								@if (Model.OrderHeader.OrderStatus == SD.StatusApproved)
 								{
-									<button type="submit" class="btn btn-primary form-control my-1">Start Processing</button>
+									<button type="submit" asp-action="StartProccesing" class="btn btn-primary form-control my-1">Start Processing</button>
 								}
 								@if (Model.OrderHeader.OrderStatus == SD.StatusInProcess)
 
 								{
 
-									<button type="submit" class="btn btn-primary form-control my-1">Ship Order</button>
+									<button asp-action="ShipOrder" onclick="return validateInput()" type="submit" class="btn btn-primary form-control my-1">Ship Order</button>
 
 								}
 
 
 								@if (Model.OrderHeader.OrderStatus != SD.StatusRefunded
-								&& Model.OrderHeader.OrderStatus != SD.StatusCancelled && 
-								Model.OrderHeader.OrderStatus != SD.StatusShipped)
+													&& Model.OrderHeader.OrderStatus != SD.StatusCancelled &&
+													Model.OrderHeader.OrderStatus != SD.StatusShipped)
 
 								{
 
@@ -281,3 +281,30 @@
 		</div>
 	</div>
 </form>
+
+
+@section scripts {
+	<partial name="_ValidationScriptsPartial"></partial>
+	<script>
+		function validateInput() {
+			if (document.getElementById("trackingNumber").value === "") {
+				Swal.fire({
+					icon: 'error',
+					title: 'Oops',
+					text: 'Please enter Tracking Number!',
+				});
+				return false; // Prevent form submission
+			}
+
+			if (document.getElementById("carrier").value === "") {
+				Swal.fire({
+					icon: 'error',
+					title: 'Oops',
+					text: 'Please enter carrier!',
+				});
+				return false; // Prevent form submission
+			}
+			return true; // Allow form submission
+		}
+	</script>
+}

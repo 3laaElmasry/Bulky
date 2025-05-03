@@ -79,6 +79,48 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             return RedirectToAction(nameof(Details), new {orderId = orderHeaderFromdb?.Id});
         }
 
+
+        [HttpPost]
+        [Authorize(Roles = $"{SD.Role_Admin},{SD.Role_Employee}")]
+
+        public async Task<IActionResult> StartProccesing()
+        {
+            await _unitOfWork.OrderHeaderRepo.UpdateStatus(orderVM.OrderHeader.Id,SD.StatusInProcess);
+            await _unitOfWork.Save();
+            TempData["Success"] = "Order Details Updated Successfully.";
+            return RedirectToAction(nameof(Details), new { orderId = orderVM.OrderHeader.Id });
+        }
+
+
+        [HttpPost]
+        [Authorize(Roles = $"{SD.Role_Admin},{SD.Role_Employee}")]
+
+        public async Task<IActionResult> ShipOrder()
+        {
+            var orderHeaderFromDb = await _unitOfWork.OrderHeaderRepo
+                .GetAsync(o => o.Id == orderVM.OrderHeader.Id, null);
+
+
+            if (orderHeaderFromDb is not null)
+            {
+                orderHeaderFromDb.TrackingNumber = orderVM.OrderHeader.TrackingNumber;  
+                orderHeaderFromDb.Carrier = orderVM.OrderHeader.Carrier;
+                orderHeaderFromDb.OrderStatus = SD.StatusShipped;
+                orderHeaderFromDb.ShippingDate = DateTime.Now;
+                if(orderHeaderFromDb.PaymentStatus == SD.PaymentStatusDelayedPayment)
+                {
+                    orderHeaderFromDb.OrderStatus = SD.StatusShipped;
+                    orderHeaderFromDb.PaymentDueDate = DateOnly.FromDateTime(DateTime.Now.AddDays(30));
+
+                }
+                _unitOfWork.OrderHeaderRepo.Update(orderHeaderFromDb);
+                await _unitOfWork.Save();
+                TempData["Success"] = "Order Shipped Successfully.";
+
+            }
+            return RedirectToAction(nameof(Details), new { orderId = orderVM.OrderHeader.Id });
+        }
+
         #region API Calls
         [HttpGet]
         public async Task<IActionResult> GetAll(string status)
