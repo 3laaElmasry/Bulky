@@ -1,20 +1,23 @@
 ﻿var dataTable;
 $(document).ready(function () {
-    loadDataTable();
+    // Extract status from URL query string
+    var urlParams = new URLSearchParams(window.location.search);
+    var status = urlParams.get('status') || 'all'; // Default to empty string if status is not provided
+    loadDataTable(status);
 });
-function loadDataTable() {
+function loadDataTable(status) {
     dataTable = $('#tblData').DataTable({
         "ajax": {
-            url: '/admin/Order/getall',
+            url: '/admin/Order/getall?status=' + status,
             error: function (xhr, error, thrown) {
                 console.log("Error loading data: ", error);
             }
         },
         "columns": [
             { data: 'id', "width": "4%" },
-            { data: 'applicationUser.name', "width": "15%" },
+            { data: 'applicationUser.name', "width": "20%" },
             { data: 'phoneNumber', "width": "20%" },
-            { data: 'applicationUser.email', "width": "15%" },
+            { data: 'applicationUser.email', "width": "20%" },
             { data: 'orderStatus', "width": "10%" },
             { data: 'orderTotal', "width": "10%" },
             {
@@ -27,7 +30,7 @@ function loadDataTable() {
 								</a>
 								`
                 },
-                "width": "25%"
+                "width": "10%"
             },
 
 
