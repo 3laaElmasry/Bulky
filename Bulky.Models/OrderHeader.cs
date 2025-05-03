@@ -47,5 +47,8 @@ namespace BulkyBook.Models
 
         [Required]
         public string? PhoneNumber { get; set; }
+        public string? TrackingNumber { get; set; }
+
+        public string? Carrier { get; set; }
     }
 }
