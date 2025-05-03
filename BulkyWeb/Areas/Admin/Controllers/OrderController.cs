@@ -5,6 +5,7 @@ using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 using System.Diagnostics;
 using System.Security.Claims;
 
@@ -116,6 +117,45 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                 _unitOfWork.OrderHeaderRepo.Update(orderHeaderFromDb);
                 await _unitOfWork.Save();
                 TempData["Success"] = "Order Shipped Successfully.";
+
+            }
+            return RedirectToAction(nameof(Details), new { orderId = orderVM.OrderHeader.Id });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = $"{SD.Role_Admin},{SD.Role_Employee}")]
+        public async Task<IActionResult> CancelOrder()
+        {
+            var orderHeaderFromDb = await _unitOfWork.OrderHeaderRepo
+                .GetAsync(o => o.Id == orderVM.OrderHeader.Id, null);
+
+
+            if (orderHeaderFromDb is not null)
+            {
+                if (orderHeaderFromDb.PaymentStatus == SD.StatusApproved)
+                {
+                    var options = new RefundCreateOptions()
+                    {
+                        Reason = RefundReasons.RequestedByCustomer,
+                        PaymentIntent = orderHeaderFromDb.PaymentIntentedId,
+                    };
+
+                    var service = new RefundService();
+                    Refund refund = await service.CreateAsync(options);
+
+                    await _unitOfWork.OrderHeaderRepo
+                        .UpdateStatus(orderHeaderFromDb.Id, SD.StatusCancelled, SD.StatusRefunded);
+
+
+                }
+                else
+                {
+                    await _unitOfWork.OrderHeaderRepo
+                      .UpdateStatus(orderHeaderFromDb.Id, SD.StatusCancelled,SD.StatusCancelled);
+                }
+                
+                await _unitOfWork.Save();
+                TempData["Success"] = "Order Cancelled Successfully.";
 
             }
             return RedirectToAction(nameof(Details), new { orderId = orderVM.OrderHeader.Id });
