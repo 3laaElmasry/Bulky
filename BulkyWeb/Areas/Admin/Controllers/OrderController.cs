@@ -1,5 +1,6 @@
 ﻿using BulkyBook.DataAccess.Repostiory.IRepositroy;
 using BulkyBook.Models;
+using BulkyBook.Models.ViewModels;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -20,11 +21,26 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             _unitOfWork = unitOfWork;
         }
 
+
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int orderId)
+        {
+            OrderVM orderVM = new OrderVM()
+            {
+                OrderHeader = await _unitOfWork.OrderHeaderRepo
+                .GetAsync(o => o.Id == orderId, includeProperties:"ApplicationUser"),
+                OrderDetail = await _unitOfWork.OrderDetailRepo
+                .GetAllAsync(o => o.OrderHeaderId == orderId, includeProperties:"Product"),
+            };
+            return View(orderVM);
+        }
 
         #region API Calls
         [HttpGet]
