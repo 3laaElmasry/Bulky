@@ -69,7 +69,7 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
         [HttpGet]
         public async Task<IActionResult> Plus(int cartId)
         {
-            var cartFromDb = await _unitOfWork.ShoppingCartRepo.GetAsync(c => c.Id == cartId,null,tracked:true);
+            var cartFromDb = await _unitOfWork.ShoppingCartRepo.GetAsync(c => c.Id == cartId, null, tracked: true);
             cartFromDb!.Count += 1;
             await _unitOfWork.Save();
 
@@ -79,39 +79,40 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
         public async Task<IActionResult> Minus(int cartId)
         {
             var cartFromDb = await _unitOfWork.ShoppingCartRepo.GetAsync(c => c.Id == cartId, null, tracked: true);
-            if(cartFromDb!.Count <= 1)
+            if (cartFromDb!.Count <= 1)
             {
+
                 //Remove
-                _unitOfWork.ShoppingCartRepo.Remove(cartFromDb!);
-                await _unitOfWork.Save();
 
                 IEnumerable<ShoppingCart> carts = await _unitOfWork.ShoppingCartRepo
-                .GetAllAsync(c => c.ApplicationUserId == cartFromDb.ApplicationUserId);
+                   .GetAllAsync(c => c.ApplicationUserId == cartFromDb.ApplicationUserId);
 
-                HttpContext.Session.SetInt32(SD.SessionCart, carts.Count());
+                HttpContext.Session.SetInt32(SD.SessionCart, carts.Count() - 1);
+
+                _unitOfWork.ShoppingCartRepo.Remove(cartFromDb!);
 
             }
             else
             {
                 cartFromDb!.Count -= 1;
-                await _unitOfWork.Save();
 
             }
 
+            await _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
         [HttpGet]
         public async Task<IActionResult> Remove(int cartId)
         {
-            var cartFromDb = await _unitOfWork.ShoppingCartRepo.GetAsync(c => c.Id == cartId, null);
-
-            string? userId = cartFromDb?.ApplicationUserId;
-            _unitOfWork.ShoppingCartRepo.Remove(cartFromDb!);
-            await _unitOfWork.Save();
+            var cartFromDb = await _unitOfWork.ShoppingCartRepo.GetAsync(c => c.Id == cartId, null, tracked: true);
 
             IEnumerable<ShoppingCart> carts = await _unitOfWork.ShoppingCartRepo
-               .GetAllAsync(c => c.ApplicationUserId == userId);
-            HttpContext.Session.SetInt32(SD.SessionCart, carts.Count());
+               .GetAllAsync(c => c.ApplicationUserId == cartFromDb!.ApplicationUserId);
+
+            HttpContext.Session.SetInt32(SD.SessionCart, carts.Count() - 1);
+
+            _unitOfWork.ShoppingCartRepo.Remove(cartFromDb!);
+            await _unitOfWork.Save();
 
             return RedirectToAction(nameof(Index));
         }
@@ -132,7 +133,7 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
 
                     ApplicationUser = await _unitOfWork
                     .ApplicationUserRepo
-                    .GetAsync(u => u.Id == userId,null),
+                    .GetAsync(u => u.Id == userId, null),
                 }
             };
 
@@ -153,7 +154,7 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
         }
 
 
-        [HttpPost,ActionName("Summary")]
+        [HttpPost, ActionName("Summary")]
         public async Task<IActionResult> SummaryPOST()
         {
             var claimsIdentity = User.Identity as ClaimsIdentity;
@@ -166,16 +167,16 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
 
             ApplicationUser? applicationUser = await _unitOfWork.ApplicationUserRepo.GetAsync(u => u.Id == userId, null);
-            
+
             foreach (var cart in ShoppingCartVM.ShoppingCartList)
             {
                 cart.Price = GetPriceBasedOnQuantity(cart);
                 ShoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
             }
 
-            
 
-            if(applicationUser!.CompanyId.GetValueOrDefault() == 0)
+
+            if (applicationUser!.CompanyId.GetValueOrDefault() == 0)
             {
                 ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
                 ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
@@ -190,7 +191,7 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             await _unitOfWork.OrderHeaderRepo.AddAsync(ShoppingCartVM.OrderHeader);
             await _unitOfWork.Save();
 
-            foreach(var cart in ShoppingCartVM.ShoppingCartList)
+            foreach (var cart in ShoppingCartVM.ShoppingCartList)
             {
                 OrderDetail orderDetail = new OrderDetail()
                 {
@@ -218,7 +219,7 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
                     LineItems = new List<Stripe.Checkout.SessionLineItemOptions>()
                 };
 
-                foreach(var item in ShoppingCartVM.ShoppingCartList)
+                foreach (var item in ShoppingCartVM.ShoppingCartList)
                 {
                     var sessionLineItem = new SessionLineItemOptions
                     {
@@ -233,7 +234,7 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
                             }
                         },
                         Quantity = item.Count
-                        
+
                     };
                     options.LineItems.Add(sessionLineItem);
                 }
@@ -242,7 +243,7 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
                 Session session = service.Create(options);
 
                 await _unitOfWork.OrderHeaderRepo.UpdateStripePaymentId
-                    (ShoppingCartVM.OrderHeader.Id,session.Id,session.PaymentIntentId );
+                    (ShoppingCartVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
 
                 await _unitOfWork.Save();
 
@@ -256,8 +257,8 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
         public async Task<IActionResult> OrderConfirmation(int id)
         {
 
-            OrderHeader orderHeader = await _unitOfWork.OrderHeaderRepo.GetAsync(o => o.Id == id,null);
-            if(orderHeader.PaymentStatus != SD.PaymentStatusDelayedPayment)
+            OrderHeader orderHeader = await _unitOfWork.OrderHeaderRepo.GetAsync(o => o.Id == id, null);
+            if (orderHeader.PaymentStatus != SD.PaymentStatusDelayedPayment)
             {
                 //Customer User
 
@@ -265,10 +266,10 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
 
                 Session session = service.Get(orderHeader.SessionId);
 
-                if(session.PaymentStatus.ToLower() == "paid")
+                if (session.PaymentStatus.ToLower() == "paid")
                 {
-                    await _unitOfWork.OrderHeaderRepo.UpdateStripePaymentId(id,session.Id,session.PaymentIntentId);
-                    await _unitOfWork.OrderHeaderRepo.UpdateStatus(id,SD.StatusApproved, SD.PaymentStatusApproved);
+                    await _unitOfWork.OrderHeaderRepo.UpdateStripePaymentId(id, session.Id, session.PaymentIntentId);
+                    await _unitOfWork.OrderHeaderRepo.UpdateStatus(id, SD.StatusApproved, SD.PaymentStatusApproved);
                     await _unitOfWork.Save();
                 }
 
