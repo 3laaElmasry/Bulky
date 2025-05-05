@@ -4,6 +4,7 @@ using BulkyBook.DataAccess.Repostiory.IRepositroy;
 using BulkyBook.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using BulkyBook.Utility;
 
 namespace BulkyBookWeb.Areas.Customer.Controllers
 {
@@ -54,20 +55,25 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             shoppingCart.ApplicationUserId = userId;
 
             var cartFromDb = await _unitOfWork.ShoppingCartRepo.GetAsync(c => c.ApplicationUserId == userId
-            && c.ProductId == shoppingCart.ProductId,null,true);
+            && c.ProductId == shoppingCart.ProductId,null);
 
             if (cartFromDb != null)
             {
                 cartFromDb.Count += shoppingCart.Count;
+                _unitOfWork.ShoppingCartRepo.Update(cartFromDb);
+                await _unitOfWork.Save();
                 TempData["Success"] = "Cart Updated Successfully";
             }
             else
             {
                 await _unitOfWork.ShoppingCartRepo.AddAsync(shoppingCart);
+                await _unitOfWork.Save();
                 TempData["Success"] = "Cart Created Successfully";
 
+                IEnumerable<ShoppingCart> carts = await _unitOfWork.ShoppingCartRepo
+                .GetAllAsync(c => c.ApplicationUserId == userId);
+                HttpContext.Session.SetInt32(SD.SessionCart, carts.Count());
             }
-            await _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
 
         }
