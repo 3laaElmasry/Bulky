@@ -83,12 +83,20 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             {
                 //Remove
                 _unitOfWork.ShoppingCartRepo.Remove(cartFromDb!);
+                await _unitOfWork.Save();
+
+                IEnumerable<ShoppingCart> carts = await _unitOfWork.ShoppingCartRepo
+                .GetAllAsync(c => c.ApplicationUserId == cartFromDb.ApplicationUserId);
+
+                HttpContext.Session.SetInt32(SD.SessionCart, carts.Count());
+
             }
             else
             {
                 cartFromDb!.Count -= 1;
+                await _unitOfWork.Save();
+
             }
-            await _unitOfWork.Save();
 
             return RedirectToAction(nameof(Index));
         }
@@ -96,8 +104,15 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
         public async Task<IActionResult> Remove(int cartId)
         {
             var cartFromDb = await _unitOfWork.ShoppingCartRepo.GetAsync(c => c.Id == cartId, null);
-             _unitOfWork.ShoppingCartRepo.Remove(cartFromDb!);
+
+            string? userId = cartFromDb?.ApplicationUserId;
+            _unitOfWork.ShoppingCartRepo.Remove(cartFromDb!);
             await _unitOfWork.Save();
+
+            IEnumerable<ShoppingCart> carts = await _unitOfWork.ShoppingCartRepo
+               .GetAllAsync(c => c.ApplicationUserId == userId);
+            HttpContext.Session.SetInt32(SD.SessionCart, carts.Count());
+
             return RedirectToAction(nameof(Index));
         }
 

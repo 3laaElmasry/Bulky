@@ -21,6 +21,18 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
 
         public async Task<IActionResult> Index()
         {
+
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if(userId is not null)
+            {
+                IEnumerable<ShoppingCart> carts = await _unitOfWork.ShoppingCartRepo
+                .GetAllAsync(c => c.ApplicationUserId == userId);
+                HttpContext.Session.SetInt32(SD.SessionCart, carts.Count());
+
+            }
+
             IEnumerable<Product> productList = await _unitOfWork.ProductRepo
                 .GetAllAsync(includeProperties: "Category");
 
