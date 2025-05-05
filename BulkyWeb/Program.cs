@@ -57,6 +57,12 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+builder.Services.AddAuthentication().AddFacebook(options =>
+{
+    options.AppId = "1904462953624103";
+    options.AppSecret = "6d08f7ad1e5692a8c69f0433808bac94";
+    //options.ReturnUrlParameter = "https://localhost:7180/Identity/Account/Register";
+});
 builder.Services.AddRazorPages();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
