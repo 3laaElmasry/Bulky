@@ -4,12 +4,24 @@
 	ViewData["Title"] = "Register";
 }
 
+@{
+	var viewTitle = "Register";
+}
 
 <div class="card shadow border-0 mt-4">
 	<div class="card-header bg-secondary bg-gradient m-lg-0 py-4">
 		<div class="row">
 			<div class="col-12 text-center">
-				<h2 class="py-2 text-white ">Register</h2>
+				@if (User.IsInRole(SD.Role_Admin))
+				{
+					viewTitle = "Register - ADMIN PORTAL";
+				}
+				else if (User.IsInRole(SD.Role_Employee))
+				{
+					viewTitle = "Register - Employee PORTAL";
+
+				}
+				<h2 class="py-2 text-white ">@viewTitle</h2>
 			</div>
 		</div>
 	</div>
@@ -64,12 +76,15 @@
 						<label asp-for="Input.PhoneNumber" class="ms-2 text-muted">Phone Number</label>
 						<span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
 					</div>
-					<div class="form-floating mb-3 col-6">
-						<select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select">
-							<option disabled selected>--Select Role--</option>
-						</select>
-						<label asp-for="Input.Role" class="ms-2 text-muted">Chose Role </label>
-					</div>
+					@if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
+					{
+						<div class="form-floating mb-3 col-6">
+							<select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select">
+								<option disabled selected>--Select Role--</option>
+							</select>
+							<label asp-for="Input.Role" class="ms-2 text-muted">Chose Role </label>
+						</div>
+					}
 					<div class="form-floating mb-3 col-6">
 						<select style="display:none"  asp-for="Input.CompanyId" asp-items="@Model.Input.CompanyList" class="form-select">
 							<option disabled selected>--Select Company--</option>
@@ -81,11 +96,11 @@
 					</div>
 				</form>
 			</div>
+			@if(!User.IsInRole(SD.Role_Admin) && !User.IsInRole(SD.Role_Employee))
+			{
 			<div class="col-md-12 p-3 text-center">
 				<section>
 					<p class="divider-text d-flex pt-3">or</p>
-					
-
 					@{
 						if ((Model.ExternalLogins?.Count ?? 0) == 0)
 						{
@@ -114,6 +129,7 @@
 					}
 				</section>
 			</div>
+			}
 		</div>
 
 	</div>

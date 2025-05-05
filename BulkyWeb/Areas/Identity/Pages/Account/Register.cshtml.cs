@@ -111,13 +111,13 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
 
 
-            public string Role {  get; set; }
+            public string Role { get; set; }
 
             [ValidateNever]
             public IEnumerable<SelectListItem> RoleList { get; set; }
 
 
-            
+
 
             [ValidateNever]
             public IEnumerable<SelectListItem> CompanyList { get; set; }
@@ -137,7 +137,7 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-            if(!await _roleManager.RoleExistsAsync(SD.Role_Customer))
+            if (!await _roleManager.RoleExistsAsync(SD.Role_Customer))
             {
                 await _roleManager.CreateAsync(new IdentityRole { Name = SD.Role_Customer });
                 await _roleManager.CreateAsync(new IdentityRole { Name = SD.Role_Company });
@@ -163,7 +163,7 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
                 })
 
             };
-            
+
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
@@ -186,7 +186,7 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
                 user.PostalCode = Input.PostalCode;
                 user.StreetAddress = Input.StreetAddress;
 
-                if(Input.Role == SD.Role_Company)
+                if (Input.Role == SD.Role_Company)
                 {
                     user.CompanyId = Input.CompanyId;
                 }
@@ -197,7 +197,7 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
                 {
                     if (!String.IsNullOrEmpty(Input.Role))
                     {
-                        await _userManager.AddToRoleAsync(user,Input.Role);
+                        await _userManager.AddToRoleAsync(user, Input.Role);
                     }
                     else
                     {
@@ -224,7 +224,15 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
+                        {
+                            TempData["Success"] = "New User Created Successfully";
+
+                        }
+                        else
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                        }
                         return LocalRedirect(returnUrl);
                     }
                 }
