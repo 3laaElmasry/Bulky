@@ -279,6 +279,8 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
                 _unitOfWork.ShoppingCartRepo.RemoveRange(shoppingCarts);
                 await _unitOfWork.Save();
 
+                HttpContext.Session.Clear();
+
             }
             return View(id);
         }
