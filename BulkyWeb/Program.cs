@@ -8,6 +8,8 @@ using BulkyBook.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using BulkyBook.Utility;
 using Stripe;
+using BulkyBook.DataAccess.DbInitializer;
+using BulkyBook.DataAccess.DBIntilaizer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,6 +70,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 
+builder.Services.AddScoped<IDbInitializer, DbInitializer>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -83,6 +87,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
+SeedDatabase();
 app.MapStaticAssets();
 StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:Secretkey").Value;
 app.MapRazorPages();
@@ -93,3 +98,16 @@ app.MapControllerRoute(
 
 
 app.Run();
+
+
+void SeedDatabase()
+{
+    using(var scope = app.Services.CreateScope())
+    {
+        var initializer = scope.ServiceProvider
+            .GetRequiredService<IDbInitializer>();
+
+        initializer.Initialize();
+        
+    }
+}

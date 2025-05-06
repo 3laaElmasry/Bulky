@@ -137,13 +137,7 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-            if (!await _roleManager.RoleExistsAsync(SD.Role_Customer))
-            {
-                await _roleManager.CreateAsync(new IdentityRole { Name = SD.Role_Customer });
-                await _roleManager.CreateAsync(new IdentityRole { Name = SD.Role_Company });
-                await _roleManager.CreateAsync(new IdentityRole { Name = SD.Role_Admin });
-                await _roleManager.CreateAsync(new IdentityRole { Name = SD.Role_Employee });
-            }
+            
 
             var companies = await _unitOfWork.CompanyRepo.GetAllAsync(null);
 
