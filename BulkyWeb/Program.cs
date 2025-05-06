@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using BulkyBook.Utility;
 using Stripe;
 using BulkyBook.DataAccess.DbInitializer;
-using BulkyBook.DataAccess.DBIntilaizer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -100,14 +99,14 @@ app.MapControllerRoute(
 app.Run();
 
 
-void SeedDatabase()
+async void SeedDatabase()
 {
     using(var scope = app.Services.CreateScope())
     {
         var initializer = scope.ServiceProvider
             .GetRequiredService<IDbInitializer>();
 
-        initializer.Initialize();
+        await initializer.InitializeAsync();
         
     }
 }
