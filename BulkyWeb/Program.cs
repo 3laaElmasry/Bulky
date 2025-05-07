@@ -18,7 +18,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer
-    (builder.Configuration.GetConnectionString("defaultConnection"), sqlServerOptions => sqlServerOptions.EnableRetryOnFailure());
+    (builder.Configuration.GetConnectionString("defaultConnection"),
+    sqlServerOptions => sqlServerOptions.MaxBatchSize(20));
         
 });
 

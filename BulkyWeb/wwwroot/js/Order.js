@@ -9,10 +9,12 @@ function loadDataTable(status) {
     dataTable = $('#tblData').DataTable({
         "ajax": {
             url: '/admin/Order/getall?status=' + status,
+            delay: 5000, // Poll every 5 seconds
             error: function (xhr, error, thrown) {
                 console.log("Error loading data: ", error);
             }
         },
+        pageLength: 10,
         "columns": [
             { data: 'id', "width": "4%" },
             { data: 'applicationUser.name', "width": "20%" },

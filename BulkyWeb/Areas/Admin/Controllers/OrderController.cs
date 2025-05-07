@@ -175,7 +175,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
 
 
-            string domain = Request.Scheme + "//" + Request.Host.Value + "/";
+            string domain = "https://localhost:7180/";
             var options = new Stripe.Checkout.SessionCreateOptions
             {
 

@@ -5,11 +5,13 @@ $(document).ready(function () {
 function loadDataTable() {
      dataTable = $('#tblData').DataTable({
         "ajax": {
-            url: '/admin/product/getall',
+             url: '/admin/product/getall',
+             delay: 5000, // Poll every 5 seconds
             error: function (xhr, error, thrown) {
                 console.log("Error loading data: ", error);
             }
-        },
+         },
+         pageLength: 10,
         "columns": [
             { data: 'title', "width": "25%" },
             { data: 'isbn', "width": "15%" },
