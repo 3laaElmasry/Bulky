@@ -41,26 +41,23 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                 var roleId = userRoles.FirstOrDefault(u => u.UserId == user.Id)?.RoleId;
                 var role = roles.FirstOrDefault(r => r.Id == roleId);
                 user.Role = role?.Name;
+
+                if(user.Company is null)
+                {
+                    user.Company = new Company
+                    {
+                        Name = ""
+                    };
+                }
             }
-
-            var result = UsersList.Select(u => new
-            {
-                id = u.Id,
-                Name = u.Name,
-                Email = u.Email,
-                PhoneNumber = u.PhoneNumber,
-                CompanyName = u.Company == null? "" : u.Company.Name,
-                Role = u.Role,
-            });
-
-            return Json(new { data = result });
+            return Json(new { data = UsersList });
         }
 
         [HttpPost]
-        public async Task<IActionResult> LockUnLock([FromBody]string? userId)
+        public async Task<IActionResult> LockUnLock([FromBody]string? id)
         {
 
-            var userFromDb = await _db.ApplicationUsers.FirstOrDefaultAsync(u => u.Id == userId);
+            var userFromDb = await _db.ApplicationUsers.FirstOrDefaultAsync(u => u.Id == id);
             if(userFromDb == null)
             {
                 return Json(new { success = true, message = "Error While Locking / UnLocking" });
@@ -70,12 +67,12 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             if(userFromDb.LockoutEnd != null && userFromDb.LockoutEnd > DateTime.Now)
             {
                 userFromDb.LockoutEnd = DateTime.Now;
-                TempData["Success"] = "User is Un Locked Succefully";
+                TempData["Success"] = "User is un locked successfully";
             }
             else
             {
                 userFromDb.LockoutEnd = DateTime.Now.AddYears(1);
-                TempData["Success"] = "User is Locked For 1 Year Succefully";
+                TempData["Success"] = "User is locked for 1 year successfully";
 
             }
             _db.SaveChanges();
