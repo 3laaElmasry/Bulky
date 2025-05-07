@@ -209,7 +209,7 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
 
             if (applicationUser!.CompanyId.GetValueOrDefault() == 0)
             {
-                string domain = "https://localhost:7180/";
+                string domain = Request.Scheme +  "//" + Request.Host.Value + "/";
                 var options = new Stripe.Checkout.SessionCreateOptions
                 {
 
