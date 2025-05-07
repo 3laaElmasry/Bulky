@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace BulkyBookWeb.Areas.Admin.Controllers
 {
@@ -42,7 +44,6 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             var userRoles = _db.UserRoles.ToList();
             var roles = _db.Roles.ToList();
 
-
             foreach (var user in UsersList)
             {
                 var roleId = userRoles.FirstOrDefault(u => u.UserId == user.Id)?.RoleId;
@@ -51,12 +52,11 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
                 if (user.Company is null)
                 {
-                    user.Company = new Company
-                    {
-                        Name = ""
-                    };
+                    user.Company = new Company { Name = "" };
                 }
             }
+
+            
             return Json(new { data = UsersList });
         }
 

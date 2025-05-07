@@ -739,7 +739,7 @@ namespace BulkyBook.DataAccess.Migrations
             modelBuilder.Entity("BulkyBook.Models.ApplicationUser", b =>
                 {
                     b.HasOne("BulkyBook.Models.Company", "Company")
-                        .WithMany("Employees")
+                        .WithMany()
                         .HasForeignKey("CompanyId");
 
                     b.Navigation("Company");
@@ -748,11 +748,6 @@ namespace BulkyBook.DataAccess.Migrations
             modelBuilder.Entity("BulkyBook.Models.Category", b =>
                 {
                     b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("BulkyBook.Models.Company", b =>
-                {
-                    b.Navigation("Employees");
                 });
 #pragma warning restore 612, 618
         }

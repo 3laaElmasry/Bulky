@@ -22,8 +22,5 @@ namespace BulkyBook.Models
 
         [Display(Name = "Phone Number")]
         public string? PhoneNumber { get; set; }
-
-        [ValidateNever]
-        public List<ApplicationUser>? Employees { get; set; }
     }
 }
