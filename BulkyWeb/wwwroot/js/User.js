@@ -8,11 +8,12 @@ function loadDataTable() {
     dataTable = $('#tblData').DataTable({
         "ajax": { url: '/admin/user/getall' },
         "columns": [
-            { "data": "name", "width": "15%" },
-            { "data": "email", "width": "15%" },
-            { "data": "phoneNumber", "width": "15%" },
-            { "data": "company.name", "width": "15%" },
-            { "data": "role", "width": "15%" },
+            { "data": "name", "width": "10%" },
+            { "data": "id", "width": "10%" },
+            { "data": "email", "width": "10%" },
+            { "data": "phoneNumber", "width": "10%" },
+            { "data": "company.name", "width": "10%" },
+            { "data": "role", "width": "10%" },
             {
                 data: { id: "id", lockoutEnd: "lockoutEnd" },
                 "render": function (data) {
