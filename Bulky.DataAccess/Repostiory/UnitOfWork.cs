@@ -17,6 +17,8 @@ namespace BulkyBook.DataAccess.Repostiory
         public IOrderDetailRepository OrderDetailRepo { get; private set; }
         public IOrderHeaderRepository OrderHeaderRepo { get; private set; }
 
+        public IProductImageRepository ProductImageRepo { get; private set; }
+
         private readonly ApplicationDbContext _db;
         public UnitOfWork(ApplicationDbContext db)
         {
@@ -28,6 +30,7 @@ namespace BulkyBook.DataAccess.Repostiory
             ApplicationUserRepo = new ApplicationUserRepository(_db);
             OrderDetailRepo = new OrderDetailRepository(_db);
             OrderHeaderRepo = new OrderHeaderRepository(_db);
+            ProductImageRepo = new ProductImageRepository(_db);
         }
 
         public async Task Save()

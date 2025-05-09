@@ -17,7 +17,7 @@ namespace BulkyBook.DataAccess.Repostiory.IRepositroy
         IOrderHeaderRepository OrderHeaderRepo { get; }
 
 
-
+        IProductImageRepository ProductImageRepo { get; }
         Task Save();
     }
 }
