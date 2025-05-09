@@ -1,5 +1,6 @@
 ﻿
 
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace BulkyBook.Models
@@ -41,5 +42,9 @@ namespace BulkyBook.Models
         public string? ImgUrl { get; set; }
         public int CategoryId { get; set; }
         public Category? Category { get; set; }
+
+
+        [ValidateNever]
+        List<ProductImage>? ProductImages { get; set; }
     }
 }
