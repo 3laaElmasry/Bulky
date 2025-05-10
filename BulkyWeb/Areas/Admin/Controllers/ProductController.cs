@@ -206,22 +206,28 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete(int? ProductId)
         {
-            var Product = await _unitOfWork.ProductRepo.GetAsync(c => c.Id == ProductId, null);
+            var Product = await _unitOfWork.ProductRepo.GetAsync(c => c.Id == ProductId, "ProductImages");
             if (Product is null)
             {
                 return Json(new { success = false, message = "Errorr While Deleting" });
             }
 
-            
-            //if (!String.IsNullOrEmpty(Product.ImgUrl))
-            //{
-            //    string wwwRootPath = _webHostEnvironment.WebRootPath;
-            //    string oldImgPath = Path.Combine(wwwRootPath, Product.ImgUrl.TrimStart('/'));
-            //    if (System.IO.File.Exists(oldImgPath))
-            //    {
-            //        System.IO.File.Delete(oldImgPath);
-            //    }
-            //}
+            if (!Product.ProductImages.IsNullOrEmpty())
+            {
+                foreach (var img in Product.ProductImages)
+                {
+                    if (!String.IsNullOrEmpty(img.ImageUrl))
+                    {
+                        string wwwRootPath = _webHostEnvironment.WebRootPath;
+                        string oldImgPath = Path.Combine(wwwRootPath, img.ImageUrl.TrimStart('/'));
+                        if (System.IO.File.Exists(oldImgPath))
+                        {
+                            System.IO.File.Delete(oldImgPath);
+                        }
+                    }
+                    _unitOfWork.ProductImageRepo.Remove(img);
+                }
+            }
             _unitOfWork.ProductRepo.Remove(Product);
             TempData["Success"] = "Delete Successfully";
             await _unitOfWork.Save();
