@@ -29,7 +29,7 @@
 						<div class=" py-2 col-12">
 							<label asp-for="Product.Description" class="ms-2 text-muted"></label>
 							<textarea asp-for="Product.Description" class="form-control border-0 shadow">
-					</textarea>
+							</textarea>
 						</div>
 						<div class="form-floating py-2 col-12">
 							<input asp-for="Product.ISBN" class="form-control border-0 shadow" />
@@ -85,10 +85,16 @@
 						</div>
 					</div>
 				</div>
-				 <div class="col-2">
-					@* <img src="@Model.Product.ImgUrl" width="100%" *@
-					@* 	 style="border-radius:5px; border:1px solid #bbb9b9; object-fit: cover;" /> *@
-                 </div>
+				<div class="col-2">
+					@if (Model.Product.ProductImages != null)
+					{
+						foreach (var img in Model.Product.ProductImages)
+						{
+							<img src="@img.ImageUrl" width="100%" 
+							style="border-radius:5px; border:1px solid #bbb9b9; object-fit: cover;" />
+						}
+					}
+				</div>
 			</div>
 			
 		</form>

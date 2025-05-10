@@ -44,7 +44,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                 });
 
             Product? product = null;
-            product = await _unitOfWork.ProductRepo.GetAsync(c => c.Id == productId, null);
+            product = await _unitOfWork.ProductRepo.GetAsync(c => c.Id == productId,includeProperties: "ProductImages");
 
             if (product is null)
             {
