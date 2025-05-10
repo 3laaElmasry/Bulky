@@ -211,26 +211,37 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             {
                 return Json(new { success = false, message = "Errorr While Deleting" });
             }
+            string wwwRootPath = _webHostEnvironment.WebRootPath;
+            string productPath = @"Images/Products/Product-" + Product.Id.ToString();
+            string finalPath = Path.Combine(wwwRootPath, productPath);
 
-            if (!Product.ProductImages.IsNullOrEmpty())
+            if (Directory.Exists(finalPath))
             {
-                foreach (var img in Product.ProductImages)
+                if (!Product.ProductImages.IsNullOrEmpty())
                 {
-                    if (!String.IsNullOrEmpty(img.ImageUrl))
+                    foreach (var img in Product.ProductImages)
                     {
-                        string wwwRootPath = _webHostEnvironment.WebRootPath;
-                        string oldImgPath = Path.Combine(wwwRootPath, img.ImageUrl.TrimStart('/'));
-                        if (System.IO.File.Exists(oldImgPath))
+                        if (!String.IsNullOrEmpty(img.ImageUrl))
                         {
-                            System.IO.File.Delete(oldImgPath);
+
+                            string oldImgPath = Path.Combine(wwwRootPath, img.ImageUrl.TrimStart('/'));
+                            if (System.IO.File.Exists(oldImgPath))
+                            {
+                                System.IO.File.Delete(oldImgPath);
+                            }
                         }
+                        _unitOfWork.ProductImageRepo.Remove(img);
                     }
-                    _unitOfWork.ProductImageRepo.Remove(img);
                 }
+                Directory.Delete(finalPath, true);
             }
             _unitOfWork.ProductRepo.Remove(Product);
             TempData["Success"] = "Delete Successfully";
             await _unitOfWork.Save();
+
+            
+
+            
 
             return Json(new { success = true, message = "Delete Success" });
         }
