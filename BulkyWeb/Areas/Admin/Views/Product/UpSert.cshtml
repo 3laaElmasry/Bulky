@@ -92,6 +92,15 @@
 						{
 							<img src="@img.ImageUrl" width="100%" 
 							style="border-radius:5px; border:1px solid #bbb9b9; object-fit: cover;" />
+							
+							@* <a asp-route-imageId="@img.Id" asp-action="DeleteImg" asp-controller="Product" asp-area="Admin" class="btn btn-primary mx-2"> *@
+							@* 	<i class="bi bi-pencil-square"></i> Update *@
+							@* </a>	 *@
+
+							<a asp-route-imgId="@img.Id" asp-action="DeleteImg" asp-controller="Product" asp-area="Admin" class="btn btn-danger mx-2 ">
+								<i class="bi bi-trash-fill"></i> Delete
+							</a>
+			
 						}
 					}
 				</div>

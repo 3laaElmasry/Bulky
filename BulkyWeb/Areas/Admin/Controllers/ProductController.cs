@@ -154,8 +154,38 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             return View(productVM);
         }
 
+        public async Task<IActionResult> DeleteImg(int imgId)
+        {
+
+            ProductImage? productImageFromDb = await _unitOfWork.ProductImageRepo
+                .GetAsync(i => i.Id == imgId, null);
+            var productId = productImageFromDb?.ProductId;
+            if (productImageFromDb is not null)
+            {
+
+                if (!String.IsNullOrEmpty(productImageFromDb.ImageUrl))
+                {
+
+                    string wwwRootPath = _webHostEnvironment.WebRootPath;
+                    string oldImgPath = Path.Combine(wwwRootPath, productImageFromDb.ImageUrl.TrimStart('/'));
+                    if (System.IO.File.Exists(oldImgPath))
+                    {
+                        System.IO.File.Delete(oldImgPath);
+                    }
+
+                }
+                _unitOfWork.ProductImageRepo.Remove(productImageFromDb);
+                await _unitOfWork.Save();
+                TempData["Success"] = $"Deleted Succefully";
+                return RedirectToAction(nameof(UpSert), new { productId = productId});
+            }
+            TempData["Error"] = $"Error While Deleting";
+
+            return RedirectToAction(nameof(Index));
+        }
+
         #region API Calls
-                [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var productList = await _unitOfWork.ProductRepo.GetAllAsync(includeProperties: "Category");
@@ -181,6 +211,8 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             {
                 return Json(new { success = false, message = "Errorr While Deleting" });
             }
+
+            
             //if (!String.IsNullOrEmpty(Product.ImgUrl))
             //{
             //    string wwwRootPath = _webHostEnvironment.WebRootPath;
