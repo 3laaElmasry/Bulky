@@ -23,7 +23,7 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
         {
 
             IEnumerable<Product> productList = await _unitOfWork.ProductRepo
-                .GetAllAsync(includeProperties: "Category");
+                .GetAllAsync(includeProperties: "Category,ProductImages");
 
             return View(productList);
         }
@@ -35,7 +35,7 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             ShoppingCart shoppingCart = new ShoppingCart
             {
                 Id = 1,
-                Product = await _unitOfWork.ProductRepo.GetAsync(u => u.Id == productId,"Category"),
+                Product = await _unitOfWork.ProductRepo.GetAsync(u => u.Id == productId, "Category,ProductImages"),
                 ProductId = productId
             };
 
