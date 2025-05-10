@@ -9,7 +9,6 @@ function loadDataTable() {
         "ajax": { url: '/admin/user/getall' },
         "columns": [
             { "data": "name", "width": "10%" },
-            { "data": "id", "width": "10%" },
             { "data": "email", "width": "10%" },
             { "data": "phoneNumber", "width": "10%" },
             { "data": "company.name", "width": "10%" },
