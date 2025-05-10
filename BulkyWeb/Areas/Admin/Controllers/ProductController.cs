@@ -5,6 +5,7 @@ using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace BulkyBookWeb.Areas.Admin.Controllers
@@ -26,7 +27,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            IEnumerable<Product> productList = await _unitOfWork.ProductRepo.GetAllAsync(includeProperties : "Category");
+            IEnumerable<Product> productList = await _unitOfWork.ProductRepo.GetAllAsync(includeProperties: "Category");
             return View(productList);
         }
 
@@ -45,68 +46,116 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             Product? product = null;
             product = await _unitOfWork.ProductRepo.GetAsync(c => c.Id == productId, null);
 
-            if(product is null)
+            if (product is null)
             {
                 product = new Product();
             }
             ProductVM productVM = new()
             {
                 CategoryList = CategoryList,
-                
+
                 Product = product
             };
-           
+
             return View(productVM);
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpSert(ProductVM productVM,IFormFile? file)
+        public async Task<IActionResult> UpSert(ProductVM productVM, List<IFormFile> files)
         {
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid )
             {
-                string wwwRootPath = _webHostEnvironment.WebRootPath;
-                if(file is not null)
-                {
-                    //string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    //string productPath = Path.Combine(wwwRootPath, @"Images/Product");
-
-                    //if(!String.IsNullOrEmpty(productVM.Product.ImgUrl))
-                    //{
-                    //    string oldImgPath = Path.Combine(wwwRootPath, productVM.Product.ImgUrl.TrimStart('/'));
-                    //    if(System.IO.File.Exists(oldImgPath))
-                    //    {
-                    //        System.IO.File.Delete(oldImgPath);
-                    //    }
-                    //}
-
-                    //using (var fileStream = new FileStream(Path.Combine(productPath,fileName),FileMode.Create))
-                    //{
-                    //    file.CopyTo(fileStream);
-                    //}
-                    //productVM.Product.ImgUrl = "/Images/Product/" + fileName;
-                }
+               
                 string message = "";
                 if (productVM.Product.Id == 0)
                 {
-                   await _unitOfWork.ProductRepo.AddAsync(productVM.Product);
+                    await _unitOfWork.ProductRepo.AddAsync(productVM.Product);
+                    await _unitOfWork.Save();
                     message = "Created";
                 }
                 else
                 {
-                    _unitOfWork.ProductRepo.Update(productVM.Product);
                     message = "Edited";
 
                 }
-                await _unitOfWork.Save();
+
+
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                string productPath = @"Images/Products/Product-" + productVM.Product.Id.ToString();
+
+                string finalPath = Path.Combine(wwwRootPath, productPath);
+
+                var allowedExtensions = new[] { ".jpg", ".png", ".jpeg" };
+                long maxFileSize = 10 * 1024 * 1024; // 10 MB
+                var errors = new List<string>();
+
+                
+                    // Create directory if it doesn't exist
+                    Directory.CreateDirectory(finalPath);
+                if (!files.IsNullOrEmpty())
+                {
+                    foreach (var file in files)
+                    {
+                        // Validate file size
+                        if (file.Length > maxFileSize)
+                        {
+                            errors.Add($"File {file.FileName} is too large. Maximum size is 10 MB.");
+                            continue; // Skip to next file
+                        }
+
+                        // Validate file extension
+                        string extension = Path.GetExtension(file.FileName).ToLower();
+                        if (!allowedExtensions.Contains(extension))
+                        {
+                            errors.Add($"File {file.FileName} has an invalid extension ({extension}). Allowed extensions are: {string.Join(", ", allowedExtensions)}.");
+                            continue; // Skip to next file
+                        }
+
+                        // Generate unique file name and save file
+                        string fileName = Guid.NewGuid().ToString() + extension;
+                        string filePath = Path.Combine(finalPath, fileName);
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(fileStream);
+                        }
+
+                        ProductImage imageToSave = new ProductImage
+                        {
+                            ImageUrl = @"/" + productPath + @"/" + fileName,
+                            ProductId = productVM.Product.Id,
+                        };
+
+                        if (productVM.Product.ProductImages is null)
+                            productVM.Product.ProductImages = new List<ProductImage>();
+
+                        productVM.Product.ProductImages.Add(imageToSave);
+                    }
+                    _unitOfWork.ProductRepo.Update(productVM.Product);
+                    await _unitOfWork.Save();
+                    // If there are errors, add them to ModelState and return the view
+                    if (errors.Any())
+                    {
+                        foreach (var error in errors)
+                        {
+                            ModelState.AddModelError("FileUploadError", error);
+                        }
+                        return View(productVM);
+                    }
+                }
+
+
                 TempData["Success"] = $"Product {message} Successfully";
                 return RedirectToAction(nameof(Index));
             }
-            return View(productVM.Product);
+
+
+            
+            return View(productVM);
         }
 
         #region API Calls
-        [HttpGet]
+                [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var productList = await _unitOfWork.ProductRepo.GetAllAsync(includeProperties: "Category");

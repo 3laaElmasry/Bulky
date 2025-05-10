@@ -42,6 +42,6 @@ namespace BulkyBook.Models
         public int CategoryId { get; set; }
         public Category? Category { get; set; }
         [ValidateNever]
-        List<ProductImage>? ProductImages { get; set; }
+        public List<ProductImage>? ProductImages { get; set; }
     }
 }

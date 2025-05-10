@@ -29,10 +29,8 @@ namespace BulkyBook.DataAccess.Repostiory
                 objFromDb.Description = obj.Description;
                 objFromDb.CategoryId = obj.CategoryId;
                 objFromDb.Author = obj.Author;
-                //if (obj.ImgUrl != null)
-                //{
-                //    objFromDb.ImgUrl = obj.ImgUrl;
-                //}
+                objFromDb.ProductImages = obj.ProductImages;
+
             }
         }
         

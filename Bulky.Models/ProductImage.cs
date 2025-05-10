@@ -20,6 +20,6 @@ namespace BulkyBook.Models
 
         [ValidateNever]
         [ForeignKey(nameof(ProductId))]
-        public Product Product { get; set; }
+        public Product? Product { get; set; }
     }
 }
